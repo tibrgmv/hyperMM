@@ -1,0 +1,21 @@
+# data — raw and processed are large and not meant for git; source of truth is Zenodo
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# python
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# notebooks checkpoints
+.ipynb_checkpoints/
+
+# os
+.DS_Store

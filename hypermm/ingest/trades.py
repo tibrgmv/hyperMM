@@ -22,15 +22,8 @@ def hour_path(root: Path, date: str, hour: int) -> Path:
 
 
 def read_hour(path: Path, coins: Sequence[str] | None = None) -> pl.DataFrame:
-    """Read one hourly file, keeping both counterparties of every trade.
-
-    `ts` is nanoseconds since the epoch, the same clock and unit the order status
-    stream uses, so trades group into blocks alongside order events.
-
-    Which of the two counterparties was the maker is not marked in this stream and
-    is not guessed here: it follows from whether the order was already resting,
-    which only the book diff stream can say.
-    """
+    """Read one hourly file, keeping both counterparties of every trade."""
+    
     frame = pl.read_ndjson(gzip.decompress(path.read_bytes()))
     if coins is not None:
         frame = frame.filter(pl.col("coin").is_in([coin.upper() for coin in coins]))

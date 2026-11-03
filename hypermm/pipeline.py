@@ -18,7 +18,7 @@ from hypermm.reconstruct.queue import with_queue_position
 from hypermm.reconstruct.timing import with_time
 
 STATUS_COLUMNS = (
-    "ts", "oid", "statusId", "isAsk", "limitPx", "sz", "reduceOnly", "tifId", "userId",
+    "ts", "oid", "statusId", "isAsk", "limitPx", "sz", "reduceOnly", "tifId",
 )
 
 

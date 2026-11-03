@@ -17,14 +17,23 @@ _NEW_SIZE = r'"newSz":\s*"([^"]*)"'
 _PREV_SIZE = r'"origSz":\s*"([^"]*)"'
 
 
-def hour_path(root: Path, date: str, hour: int) -> Path:
+def hour_path(root: str | Path, date: str, hour: int) -> Path:
     """Build the path to one hourly file: <root>/<YYYYMMDD>/ex<H>.gz (hour not padded)."""
-    return root / date.replace("-", "") / f"ex{hour}.gz"
+    return Path(root) / date.replace("-", "") / f"ex{hour}.gz"
 
 
-def read_hour(path: Path, coins: Sequence[str] | None = None) -> pl.DataFrame:
-    """Read one hourly file into a frame carrying the book state after each change."""
-    
+def read_hour(path: str | Path, coins: Sequence[str] | None = None) -> pl.DataFrame:
+    """Read one hourly file into a frame carrying the book state after each change.
+
+    This stream has no timestamp of any kind, so position in the file is the only
+    ordering that exists; it is kept as `seq` rather than left implicit. Time comes
+    later, by joining `oid` against the order status stream.
+
+    `size` is the order's size resting on the book once the change is applied --
+    the new size, the reduced size, or zero once the order is gone -- so that
+    reconstruction reads one column instead of branching on the kind of change.
+    """
+    path = Path(path)
     frame = pl.read_ndjson(
         gzip.decompress(path.read_bytes()),
         schema_overrides={"raw_book_diff": pl.String},

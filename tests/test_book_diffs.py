@@ -6,7 +6,7 @@ import pytest
 from hypermm.ingest.book_diffs import NEW, REMOVE, UPDATE, hour_path, read_hour
 from hypermm.ingest.schema import SCALE
 
-# three record shapes exactly as published in SCHEMA.md.
+# The three record shapes exactly as published in SCHEMA.md.
 RECORDS = [
     {
         "user": "0x31ca8395cf837de08b24da3f660e77761dfb974b",
@@ -99,3 +99,7 @@ def test_rejects_a_value_it_cannot_represent_exactly(tmp_path):
     path.write_bytes(gzip.compress(json.dumps(broken).encode()))
     with pytest.raises(ValueError, match="could not be parsed"):
         read_hour(path)
+
+
+def test_a_plain_string_path_works_too(sample):
+    assert read_hour(str(sample)).height == len(RECORDS)

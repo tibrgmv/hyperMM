@@ -16,14 +16,22 @@ COUNTERPARTIES = 2
 SAME_BLOCK_HASH = "0x" + "0" * 64
 
 
-def hour_path(root: Path, date: str, hour: int) -> Path:
+def hour_path(root: str | Path, date: str, hour: int) -> Path:
     """Build the path to one hourly file: <root>/<YYYYMMDD>/<H>.gz (hour not padded)."""
-    return root / date.replace("-", "") / f"{hour}.gz"
+    return Path(root) / date.replace("-", "") / f"{hour}.gz"
 
 
-def read_hour(path: Path, coins: Sequence[str] | None = None) -> pl.DataFrame:
-    """Read one hourly file, keeping both counterparties of every trade."""
-    
+def read_hour(path: str | Path, coins: Sequence[str] | None = None) -> pl.DataFrame:
+    """Read one hourly file, keeping both counterparties of every trade.
+
+    `ts` is nanoseconds since the epoch, the same clock and unit the order status
+    stream uses, so trades group into blocks alongside order events.
+
+    Which of the two counterparties was the maker is not marked in this stream and
+    is not guessed here: it follows from whether the order was already resting,
+    which only the book diff stream can say.
+    """
+    path = Path(path)
     frame = pl.read_ndjson(gzip.decompress(path.read_bytes()))
     if coins is not None:
         frame = frame.filter(pl.col("coin").is_in([coin.upper() for coin in coins]))

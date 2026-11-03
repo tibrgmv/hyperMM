@@ -11,13 +11,12 @@ import polars as pl
 
 from hypermm.ingest.schema import RECORD_DTYPE, RECORD_SIZE, decode_fixed
 
-
-
 ENCODED_FIELDS = frozenset({"limitPx", "sz", "origSz", "triggerPx"})
 
 
-# Build the path to one hourly file: <root>/<YYYYMMDD>/<coin>_<HH>[_rejected].data.gz.
-def hour_path(root: Path, date: str, hour: int, coin: str, *, rejected: bool = False) -> Path:
+def hour_path(root: str | Path, date: str, hour: int, coin: str, *, rejected: bool = False) -> Path:
+    """Build the path to one hourly file: <root>/<YYYYMMDD>/<coin>_<HH>[_rejected].data.gz."""
+    root = Path(root)
     return (
         root
         / date.replace("-", "")
@@ -25,13 +24,18 @@ def hour_path(root: Path, date: str, hour: int, coin: str, *, rejected: bool = F
     )
 
 
-# Read one hourly file into a Polars DataFrame, decoding the fixed-point fields to int64
-def read_hour(path: Path, columns: Sequence[str] | None = None) -> pl.DataFrame:
+def read_hour(path: str | Path, columns: Sequence[str] | None = None) -> pl.DataFrame:
+    """Read one hourly file into a frame, with prices and sizes already decoded.
+
+    `ts` stays a raw uint64 nanosecond count: block reconstruction turns on exact
+    equality between timestamps, so no calendar type is imposed here.
+    """
     names = tuple(columns) if columns is not None else RECORD_DTYPE.names
     unknown = set(names) - set(RECORD_DTYPE.names)
     if unknown:
         raise ValueError(f"no such field(s) in the record: {sorted(unknown)}")
 
+    path = Path(path)
     raw = gzip.decompress(path.read_bytes())
     if len(raw) % RECORD_SIZE:
         raise ValueError(

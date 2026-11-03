@@ -22,23 +22,10 @@ REJECTIONS = frozenset(
     }
 )
 
-
+# The book diff stream has no timestamps of its own, 
+# so the only way to attach time is to join on the order ID against the order status stream
 def with_time(diffs: pl.DataFrame, statuses: pl.DataFrame) -> pl.DataFrame:
-    """Give every book change a timestamp, borrowed from the order status stream.
-
-    Two kinds of change carry their own time exactly. An order entering the book
-    is the same event as its acceptance, so it takes the time of that acceptance;
-    an order leaving the book is the same event as whatever ended it, so it takes
-    the time of its last status. Together these are about 99% of the stream.
-
-    A size reduction has no such counterpart -- the status stream does not report
-    every partial fill of a resting order -- so it inherits the last exact time
-    before it in file order. `tsExact` says which of the two a row received.
-
-    Time is then forced to be non-decreasing along the file. It is already so
-    except in a handful of orders per hour, and a queue that runs backwards in
-    time cannot be replayed at all.
-    """
+    
     touching = statuses.filter(~pl.col("statusId").is_in([int(s) for s in REJECTIONS]))
     accepted = (
         touching.filter(pl.col("statusId") == Status.OPEN)

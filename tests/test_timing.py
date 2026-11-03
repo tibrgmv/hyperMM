@@ -88,12 +88,14 @@ def test_time_is_never_allowed_to_run_backwards():
         statuses((1, Status.OPEN, 5), (2, Status.OPEN, 2), (3, Status.OPEN, 8)),
     )
     assert timed["ts"].to_list() == [T0 + 5 * BLOCK, T0 + 5 * BLOCK, T0 + 8 * BLOCK]
+    assert timed["tsMoved"].to_list() == [False, True, False]
+    assert check(timed)["movedForward"] == 1
 
 
 def test_an_order_with_no_status_at_all_leaves_the_time_unknown():
     timed = with_time(diffs((9, REMOVE), (1, NEW)), statuses((1, Status.OPEN, 3)))
     assert timed["ts"].to_list() == [None, T0 + 3 * BLOCK]
-    assert check(timed) == {"exact": 1, "carried": 0, "unknown": 1}
+    assert check(timed) == {"exact": 1, "carried": 0, "unknown": 1, "movedForward": 0}
 
 
 def test_the_report_counts_each_kind_of_row():
@@ -101,4 +103,4 @@ def test_the_report_counts_each_kind_of_row():
         diffs((1, NEW), (1, UPDATE), (1, REMOVE)),
         statuses((1, Status.OPEN, 0), (1, Status.CANCELED, 4)),
     )
-    assert check(timed) == {"exact": 2, "carried": 1, "unknown": 0}
+    assert check(timed) == {"exact": 2, "carried": 1, "unknown": 0, "movedForward": 0}

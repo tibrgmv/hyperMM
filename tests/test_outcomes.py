@@ -95,6 +95,7 @@ def test_every_fill_of_an_order_is_counted():
 def test_the_resting_side_is_recognised_wherever_it_sits_in_the_record():
     fills = maker_fills(diffs((1, NEW, 100, 0, 0)), trades((99, 1, 10, 1), (1, 98, 10, 2)))
     assert fills["oid"].to_list() == [1, 1]
+    assert fills["taker"].to_list() == [99, 98]
 
 
 def test_an_order_already_resting_when_the_file_opened_can_still_be_the_maker():

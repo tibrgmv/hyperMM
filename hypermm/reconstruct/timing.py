@@ -42,8 +42,10 @@ def with_time(diffs: pl.DataFrame, statuses: pl.DataFrame) -> pl.DataFrame:
         .join(accepted, on="oid", how="left")
         .join(ended, on="oid", how="left")
         .with_columns(ts=anchored)
-        .with_columns(tsExact=pl.col("ts").is_not_null())
-        .with_columns(ts=pl.col("ts").forward_fill().cum_max())
+        .with_columns(tsExact=pl.col("ts").is_not_null(), ts=pl.col("ts").forward_fill())
+        # an exact time behind one already seen is pulled forward, and marked as such
+        .with_columns(tsMoved=pl.col("ts") < pl.col("ts").cum_max())
+        .with_columns(ts=pl.col("ts").cum_max())
         .drop("tsOpen", "tsLast")
     )
 
@@ -54,4 +56,5 @@ def check(timed: pl.DataFrame) -> dict[str, int]:
         "exact": timed.filter("tsExact").height,
         "carried": timed.filter(~pl.col("tsExact") & pl.col("ts").is_not_null()).height,
         "unknown": timed.filter(pl.col("ts").is_null()).height,
+        "movedForward": timed.filter(pl.col("tsMoved") & pl.col("tsExact")).height,
     }

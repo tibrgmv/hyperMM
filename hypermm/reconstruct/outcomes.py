@@ -28,9 +28,18 @@ def maker_fills(diffs: pl.DataFrame, trades: pl.DataFrame) -> pl.DataFrame:
         .then("oid0")
         .otherwise("oid1")
     )
-    return paired.filter(
-        pl.col("since0").is_not_null() | pl.col("since1").is_not_null()
-    ).select("ts", waiting.alias("oid"), "px", "sz", "isAggressorAsk")
+    return (
+        paired.filter(pl.col("since0").is_not_null() | pl.col("since1").is_not_null())
+        .with_columns(oid=waiting)
+        .select(
+            "ts",
+            "oid",
+            pl.when(pl.col("oid") == pl.col("oid0")).then("oid1").otherwise("oid0").alias("taker"),
+            "px",
+            "sz",
+            "isAggressorAsk",
+        )
+    )
 
 
 # 

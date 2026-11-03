@@ -1,0 +1,94 @@
+
+==============================================================================
+SOL: market order priced by the chart and by the book
+==============================================================================
+    size       buy    sell   round trip   median spread   in spreads
+    $1,000     0.256   0.796        1.052           0.790         1.33
+    $10,000    0.418   0.992        1.409           0.790         1.78
+    $100,000   0.942   1.440        2.382           0.790         3.01
+
+    identity 1: round trip = mean spread + depth buying + depth selling
+    size     mean spread  depth buy  depth sell     sum   measured   residual
+    $1,000         0.818      0.163       0.072   1.052      1.052   -2.2e-16
+    $10,000        0.818      0.325       0.267   1.409      1.409   -2.2e-16
+    $100,000       0.818      0.849       0.716   2.382      2.382   -8.9e-16
+
+    identity 2: sell − buy = 2 × drift + (depth selling − depth buying)
+    $1,000    sell − buy +0.541 = 2 × +0.316 -0.091   residual 1.1e-16
+    $10,000   sell − buy +0.574 = 2 × +0.316 -0.057   residual 1.7e-16
+    $100,000  sell − buy +0.498 = 2 × +0.316 -0.134   residual -1.1e-16
+
+    pricing at the touch (knows the spread, not the depth), $10,000: buy 0.41, sell 0.34 median spreads per side
+
+    approximations, $10,000 buy (bps; positive flatters the strategy)
+      mid       mean   0.733   median |error|   0.395   flatters 100.0% of bars
+      touch     mean   0.325   median |error|   0.000   flatters  28.8% of bars
+      vwap      mean   0.583   median |error|   2.563   flatters  44.1% of bars
+      close     mean   0.647   median |error|   0.791   flatters  57.6% of bars
+      nextOpen  mean   0.418   median |error|   0.789   flatters  57.6% of bars
+
+    depth of the walk (levels touched)
+      $1,000    buy  median 1, max 4 at minute 29
+      $1,000    sell median 1, max 3 at minute 10
+      $10,000   buy  median 1, max 5 at minute 29
+      $10,000   sell median 1, max 5 at minute 48
+      $100,000  buy  median 2, max 7 at minute 49
+      $100,000  sell median 1, max 7 at minute 7
+
+    bar length, $10,000 round trip
+       1 min   bars  59   round trip 1.409
+       2 min   bars  29   round trip 1.497
+       5 min   bars  11   round trip 1.710
+      10 min   bars   5   round trip 2.368
+
+    checks (all must be zero):
+      $1,000    buy {'beatTheTouch': 0, 'noBook': 0, 'exhaustedBook': 0}  sell {'beatTheTouch': 0, 'noBook': 0, 'exhaustedBook': 0}
+      $10,000   buy {'beatTheTouch': 0, 'noBook': 0, 'exhaustedBook': 0}  sell {'beatTheTouch': 0, 'noBook': 0, 'exhaustedBook': 0}
+      $100,000  buy {'beatTheTouch': 0, 'noBook': 0, 'exhaustedBook': 0}  sell {'beatTheTouch': 0, 'noBook': 0, 'exhaustedBook': 0}
+
+==============================================================================
+BTC: market order priced by the chart and by the book
+==============================================================================
+    size       buy    sell   round trip   median spread   in spreads
+    $1,000     0.166   0.198        0.364           0.117         3.12
+    $10,000    0.205   0.245        0.450           0.117         3.86
+    $100,000   0.283   0.460        0.743           0.117         6.37
+
+    identity 1: round trip = mean spread + depth buying + depth selling
+    size     mean spread  depth buy  depth sell     sum   measured   residual
+    $1,000         0.190      0.071       0.103   0.364      0.364    0.0e+00
+    $10,000        0.190      0.111       0.150   0.450      0.450    5.6e-17
+    $100,000       0.190      0.188       0.365   0.743      0.743    1.1e-16
+
+    identity 2: sell − buy = 2 × drift + (depth selling − depth buying)
+    $1,000    sell − buy +0.032 = 2 × +0.000 +0.032   residual -2.1e-17
+    $10,000   sell − buy +0.039 = 2 × +0.000 +0.039   residual -6.2e-17
+    $100,000  sell − buy +0.177 = 2 × +0.000 +0.177   residual 2.8e-17
+
+    pricing at the touch (knows the spread, not the depth), $10,000: buy 0.95, sell 1.28 median spreads per side
+
+    approximations, $10,000 buy (bps; positive flatters the strategy)
+      mid       mean   0.206   median |error|   0.058   flatters 100.0% of bars
+      touch     mean   0.111   median |error|   0.000   flatters  28.8% of bars
+      vwap      mean   0.083   median |error|   2.514   flatters  47.5% of bars
+      close     mean   0.186   median |error|   0.000   flatters  52.5% of bars
+      nextOpen  mean   0.205   median |error|   0.116   flatters  61.0% of bars
+
+    depth of the walk (levels touched)
+      $1,000    buy  median 1, max 26 at minute 47
+      $1,000    sell median 1, max 16 at minute 56
+      $10,000   buy  median 1, max 26 at minute 47
+      $10,000   sell median 1, max 18 at minute 2
+      $100,000  buy  median 1, max 26 at minute 47
+      $100,000  sell median 1, max 23 at minute 56
+
+    bar length, $10,000 round trip
+       1 min   bars  59   round trip 0.450
+       2 min   bars  29   round trip 0.452
+       5 min   bars  11   round trip 0.382
+      10 min   bars   5   round trip 0.186
+
+    checks (all must be zero):
+      $1,000    buy {'beatTheTouch': 0, 'noBook': 0, 'exhaustedBook': 0}  sell {'beatTheTouch': 0, 'noBook': 0, 'exhaustedBook': 0}
+      $10,000   buy {'beatTheTouch': 0, 'noBook': 0, 'exhaustedBook': 0}  sell {'beatTheTouch': 0, 'noBook': 0, 'exhaustedBook': 0}
+      $100,000  buy {'beatTheTouch': 0, 'noBook': 0, 'exhaustedBook': 0}  sell {'beatTheTouch': 0, 'noBook': 0, 'exhaustedBook': 0}

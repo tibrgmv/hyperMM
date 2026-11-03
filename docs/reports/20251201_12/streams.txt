@@ -1,0 +1,92 @@
+
+==============================================================================
+Book diff stream: kinds of change and coins
+==============================================================================
+    remove    3,261,184     49.42%
+    new       3,259,150     49.39%
+    update       78,126      1.18%
+
+    BTC       3,531,915     53.53%
+    ETH       1,950,986     29.57%
+    SOL       1,115,559     16.91%
+
+
+==============================================================================
+Order status stream: statuses and time in force (shares of events)
+==============================================================================
+
+SOL: 1,219,826 events in the order status file (rejected file not read)
+    OPEN                          558,015     45.75%
+    CANCELED                      547,337     44.87%
+    PERP_MARGIN_REJECTED           91,079      7.47%
+    IOC_CANCEL_REJECTED            12,186      1.00%
+    FILLED                          6,400      0.52%
+    REDUCE_ONLY_CANCELED            4,424      0.36%
+    TRIGGERED                         233      0.02%
+    REDUCE_ONLY_REJECTED               65      0.01%
+    MIN_TRADE_NTL_REJECTED             40      0.00%
+    SIBLING_FILLED_CANCELED            36      0.00%
+    SELF_TRADE_CANCELED                 7      0.00%
+    MARGIN_CANCELED                     4      0.00%
+
+    ALO                         1,186,099     97.24%
+    IOC                            17,177      1.41%
+    GTC                            14,128      1.16%
+    NULL                            1,542      0.13%
+    FRONTEND_MARKET                   834      0.07%
+    LIQUIDATION_MARKET                 46      0.00%
+
+
+BTC: 5,195,978 events in the order status file (rejected file not read)
+    OPEN                        1,762,893     33.93%
+    CANCELED                    1,722,833     33.16%
+    PERP_MARGIN_REJECTED        1,641,073     31.58%
+    FILLED                         42,321      0.81%
+    IOC_CANCEL_REJECTED            22,759      0.44%
+    REDUCE_ONLY_CANCELED            1,414      0.03%
+    TRIGGERED                       1,251      0.02%
+    MIN_TRADE_NTL_REJECTED            555      0.01%
+    REDUCE_ONLY_REJECTED              531      0.01%
+    SIBLING_FILLED_CANCELED           285      0.01%
+    MARGIN_CANCELED                    58      0.00%
+    SELF_TRADE_CANCELED                 5      0.00%
+
+    ALO                         5,033,446     96.87%
+    GTC                            99,751      1.92%
+    IOC                            42,545      0.82%
+    NULL                           11,585      0.22%
+    FRONTEND_MARKET                 7,645      0.15%
+    LIQUIDATION_MARKET              1,006      0.02%
+
+
+==============================================================================
+Do the order status and book diff streams describe the same orders?
+==============================================================================
+
+SOL
+    new orders in book diffs        554,751
+    their oid found in statuses     554,749 (100.00%)
+    price  agrees                    100.00%
+    side   agrees                    100.00%
+    size   agrees                    99.26%
+    size disagreement by reduce-only flag:
+        reduceOnly=True     4,112 of     5,067   (81.15%)
+        reduceOnly=False       10 of   549,682   (0.00%)
+    disagreeing sizes smaller in the book: 100.00%
+    largest source of disagreement: 0x0291639ea7178930475da17b579e1ac2de8faed8
+        4,110 of 4,122 disagreements; its disagreeing orders reduce-only: 100.00%; its agreeing orders reduce-only: 0 of 51
+        share of the coin's book diff events: 0.75%
+
+BTC
+    new orders in book diffs        1,743,849
+    their oid found in statuses     1,743,837 (100.00%)
+    price  agrees                    100.00%
+    side   agrees                    100.00%
+    size   agrees                    100.00%
+    size disagreement by reduce-only flag:
+        reduceOnly=True        42 of     5,148   (0.82%)
+        reduceOnly=False       13 of 1,738,689   (0.00%)
+    disagreeing sizes smaller in the book: 98.18%
+    largest source of disagreement: 0xe2990ce029db870c805e90a1a8a1d8a1c52255d6
+        35 of 55 disagreements; its disagreeing orders reduce-only: 100.00%; its agreeing orders reduce-only: 877 of 1109
+        share of the coin's book diff events: 0.07%

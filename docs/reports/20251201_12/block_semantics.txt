@@ -1,0 +1,33 @@
+file                 btc_12.data.gz
+
+records              5,195,978
+distinct timestamps  37,301   -> 96.5 ms apart on average
+records per stamp    median 59   p90 347   max 3,633
+gap between stamps   median 86.8 ms   p10 53.7   p90 152.6
+gaps within 50-200ms  91.8%
+file order sorted    True
+covered span         60.0 min
+
+OPEN before CANCELED   96.6%   over 155,359,270 same-block pairs
+CANCELED before FILLED   98.8%   over 3,113,098 same-block pairs
+blocks whose oids ascend (an order-id sort would give ~100%): 2.8%
+
+stamps in btc      37,301
+stamps in sol      36,366
+shared                 35,818   (96.02% of btc, 98.49% of sol)
+union                  37,849   -> 95.1 ms apart on average
+shared expected by chance under independent ns clocks: 3.8e-04
+
+file                 sol_12.data.gz
+
+records              1,219,826
+distinct timestamps  36,366   -> 99.0 ms apart on average
+records per stamp    median 14   p90 88   max 938
+gap between stamps   median 88.9 ms   p10 54.0   p90 159.2
+gaps within 50-200ms  91.2%
+file order sorted    True
+covered span         60.0 min
+
+OPEN before CANCELED   98.5%   over 19,867,910 same-block pairs
+CANCELED before FILLED   99.4%   over 155,209 same-block pairs
+blocks whose oids ascend (an order-id sort would give ~100%): 10.9%

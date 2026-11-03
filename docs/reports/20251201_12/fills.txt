@@ -1,0 +1,82 @@
+
+==============================================================================
+SOL: makers and what the status stream reports
+==============================================================================
+    maker identification     one side   both sides   neither
+    placed in the file         96.26%        0.36%     3.38%
+    present in the file        99.64%        0.36%     0.00%
+    size reductions without any `filled` status:
+      all orders       orders reduced   4,836; without `filled`  27.30%; their share of reduced volume  28.75%; found in trades  93.79%
+      not reduce-only  orders reduced   4,681; without `filled`  26.38%; their share of reduced volume  17.63%; found in trades 100.00%
+    maker orders vs `filled` statuses   orders   equal  more trades  more events  coverage
+    earlier rule (placed)                4,588  65.37%       34.63%        0.00%    57.69%
+    current rule (present)               4,754  65.92%       34.08%        0.00%    58.16%
+    trades 6,042; `filled` statuses 6,400
+    taker has a `filled` status in the trade's block: 95.98%
+    maker has a `filled` status in the trade's block: 63.84%
+    distinct (maker order, block) pairs 5,507; with a `filled` status 63.81%
+
+==============================================================================
+SOL: outcomes of passive orders
+==============================================================================
+    passive orders placed within the hour: 554,751
+      cancelled     549,816     99.11%
+      filled          3,373      0.61%
+      resting         1,562      0.28%
+      at least one fill      0.83%
+    checks: negativeDuration 0, fillWithoutTime 0, fillBeforePlacement 0, removalBeforePlacement 0, overfilled 1, restingButRemoved 0, duplicated 0
+    decile  median ahead   filled   median life   median size
+         0       57.1100    3.18%        0.83 s       39.5000
+         1      390.8000    1.12%        0.67 s       38.4200
+         2      806.0100    0.84%        0.65 s       47.2700
+         3    1,272.9800    0.72%        0.64 s       48.1800
+         4    1,741.9800    0.53%        0.71 s       53.2700
+         5    2,247.5400    0.52%        0.68 s       58.7700
+         6    2,859.2500    0.47%        0.65 s       60.5450
+         7    3,658.7450    0.45%        0.60 s       61.1250
+         8    4,974.5300    0.29%        0.48 s       58.4500
+         9    8,390.9700    0.18%        0.40 s       52.3800
+    filled when joining an empty level 3.71%, a non-empty one 0.77%
+    median time to first fill 1.45 s; to cancellation (never filled) 0.61 s
+    orders living longer than: 0.1 s 88.41%, 0.5 s 56.08%, 1 s 38.94%, 5 s 14.87%, 30 s 3.33%
+
+==============================================================================
+BTC: makers and what the status stream reports
+==============================================================================
+    maker identification     one side   both sides   neither
+    placed in the file         93.32%        0.34%     6.33%
+    present in the file        99.66%        0.34%     0.00%
+    size reductions without any `filled` status:
+      all orders       orders reduced  29,755; without `filled`  12.13%; their share of reduced volume  15.09%; found in trades  99.00%
+      not reduce-only  orders reduced  29,280; without `filled`  12.13%; their share of reduced volume  13.96%; found in trades  99.89%
+    maker orders vs `filled` statuses   orders   equal  more trades  more events  coverage
+    earlier rule (placed)               27,677  80.68%       19.32%        0.00%    60.88%
+    current rule (present)              29,718  81.43%       18.57%        0.00%    61.59%
+    trades 42,449; `filled` statuses 42,321
+    taker has a `filled` status in the trade's block: 94.57%
+    maker has a `filled` status in the trade's block: 68.91%
+    distinct (maker order, block) pairs 35,091; with a `filled` status 74.50%
+
+==============================================================================
+BTC: outcomes of passive orders
+==============================================================================
+    passive orders placed within the hour: 1,743,849
+      cancelled   1,715,753     98.39%
+      filled         24,252      1.39%
+      resting         3,844      0.22%
+      at least one fill      1.60%
+    checks: negativeDuration 0, fillWithoutTime 0, fillBeforePlacement 0, removalBeforePlacement 0, overfilled 2, restingButRemoved 0, duplicated 0
+    decile  median ahead   filled   median life   median size
+         0        0.0001    3.74%        0.68 s        0.1164
+         1        0.0643    0.66%        0.40 s        0.0026
+         2        0.1079    1.33%        0.42 s        0.0026
+         3        0.5922    2.41%        0.55 s        0.1912
+         4        1.3335    1.88%        0.47 s        0.1926
+         5        2.4178    1.56%        0.41 s        0.1765
+         6        3.6863    1.37%        0.42 s        0.1720
+         7        5.7709    1.26%        0.40 s        0.1611
+         8       10.2975    1.06%        0.39 s        0.1743
+         9       25.6032    0.50%        0.40 s        0.2004
+    filled when joining an empty level 4.37%, a non-empty one 1.44%
+    median time to first fill 1.43 s; to cancellation (never filled) 0.42 s
+    orders living longer than: 0.1 s 87.53%, 0.5 s 42.43%, 1 s 27.31%, 5 s 11.05%, 30 s 3.08%

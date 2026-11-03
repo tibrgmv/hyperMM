@@ -1,0 +1,74 @@
+
+==============================================================================
+Level volume and queue position at placement
+==============================================================================
+all coins, 6,598,460 changes, rebuilt in 7.2 s
+    coldStartRecovered        2,649
+    coldStartLost             7,757
+    negativeLevel                 0
+    reArrival                     0
+    sizeBeforeDisagrees           0
+    growingUpdate                 0
+    nonEmptyRemoval               0
+    partial fills (updates)   78,126
+    already resting at open   10,406   (0.32% of placements)
+
+    warm-up: share of changes that are the first sight of an order already
+    resting at open, by twelfth of the file (file order, all coins):
+    1.055  0.111  0.134  0.021  0.025  0.066  0.067  0.107  0.268  0.021  0.003  0.014
+
+    queue position at placement
+    coin   placements  empty level   median ahead    p90 ahead
+    BTC     1,743,849        5.18%          1.809       14.994
+    ETH       960,550        2.21%        109.798      468.415
+    SOL       554,751        2.12%      1,988.640    6,173.050
+
+==============================================================================
+Attaching time to the book diff stream
+==============================================================================
+
+SOL: 1,115,559 changes, timed in 0.5 s
+    exact       1,109,424     99.45%
+    carried         6,135      0.55%
+    unknown             0      0.00%
+    movedForward          3      0.00%
+    non-decreasing True, span 60.00 min
+    orders with a rejection status that appear in book diffs: 0
+    inherited time vs k-th `filled` status: n 3,516, median error 0.0 ms, within 100 ms 92.63%
+
+BTC: 3,531,915 changes, timed in 1.9 s
+    exact       3,489,370     98.80%
+    carried        42,545      1.20%
+    unknown             0      0.00%
+    movedForward         15      0.00%
+    non-decreasing True, span 60.00 min
+    orders with a rejection status that appear in book diffs: 0
+    inherited time vs k-th `filled` status: n 26,146, median error 0.0 ms, within 100 ms 93.76%
+
+==============================================================================
+Top of book
+==============================================================================
+
+SOL: top of book over 1,115,559 changes in 0.4 s
+    crossed                 0
+    emptyBid                0
+    emptyAsk                2
+    bestWithoutVolume       0
+    tick (smallest positive spread)  0.01
+    median spread                    0.01
+    spread of one tick               96.0% of changes, 93.5% of time
+    mid range                        125.325 – 127.115
+    median imbalance at the touch    +0.294
+    |imbalance| above 0.5            85.9% of changes, 83.6% of time
+
+BTC: top of book over 3,531,915 changes in 0.2 s
+    crossed                 0
+    emptyBid                1
+    emptyAsk                0
+    bestWithoutVolume       0
+    tick (smallest positive spread)  1.0
+    median spread                    1.0
+    spread of one tick               93.0% of changes, 90.3% of time
+    mid range                        84,701.500 – 86,193.500
+    median imbalance at the touch    -0.241
+    |imbalance| above 0.5            82.5% of changes, 80.6% of time

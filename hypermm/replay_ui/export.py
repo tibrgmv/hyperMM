@@ -8,12 +8,9 @@ from pathlib import Path
 import numpy as np
 import polars as pl
 
-from hypermm.ingest import book_diffs, orders, trades
 from hypermm.ingest.schema import SCALE
-from hypermm.reconstruct.book import snapshots, with_top_of_book
-from hypermm.reconstruct.outcomes import outcomes
-from hypermm.reconstruct.queue import with_queue_position
-from hypermm.reconstruct.timing import with_time
+from hypermm.pipeline import load_hour
+from hypermm.reconstruct.book import snapshots
 
 NS_PER_S = 1_000_000_000
 FRAMES = 720
@@ -23,16 +20,8 @@ DECILES = 10
 
 def build(raw: str | Path, coin: str, date: str, hour: int) -> dict:
     """Turn one hour into the frames, series and summaries the page draws."""
-    raw = Path(raw)
-    changes = book_diffs.read_hour(book_diffs.hour_path(raw / "book_diffs", date, hour), [coin])
-    order_events = orders.read_hour(
-        orders.hour_path(raw / "order_statuses", date, hour, coin),
-        columns=["ts", "oid", "statusId"],
-    )
-    fills = trades.read_hour(trades.hour_path(raw / "trades", date, hour), [coin])
-
-    top = with_top_of_book(with_time(with_queue_position(changes), order_events))
-    table = outcomes(top, fills)
+    rebuilt = load_hour(raw, date, hour, coin)
+    top, table = rebuilt.top, rebuilt.table
 
     at = np.linspace(0, top.height - 1, FRAMES, dtype=np.int64)
     frames = top[at].with_columns(

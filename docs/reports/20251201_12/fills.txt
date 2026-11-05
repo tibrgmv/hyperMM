@@ -41,6 +41,17 @@ SOL: outcomes of passive orders
     orders living longer than: 0.1 s 88.41%, 0.5 s 56.08%, 1 s 38.94%, 5 s 14.87%, 30 s 3.33%
 
 ==============================================================================
+SOL: front of the queue
+==============================================================================
+    reached the front of its queue     6.77%
+    filled, having reached the front   12.26%
+    filled, never at the front         2
+    median time from placement to front 0.60 s
+    filled orders at the front no later than their first fill: 99.96%
+    the 2 filled without reaching it were behind 3 orders; how those ended:
+      SELF_TRADE_CANCELED    3
+
+==============================================================================
 BTC: makers and what the status stream reports
 ==============================================================================
     maker identification     one side   both sides   neither
@@ -80,3 +91,15 @@ BTC: outcomes of passive orders
     filled when joining an empty level 4.37%, a non-empty one 1.44%
     median time to first fill 1.43 s; to cancellation (never filled) 0.42 s
     orders living longer than: 0.1 s 87.53%, 0.5 s 42.43%, 1 s 27.31%, 5 s 11.05%, 30 s 3.08%
+
+==============================================================================
+BTC: front of the queue
+==============================================================================
+    reached the front of its queue     16.68%
+    filled, having reached the front   9.55%
+    filled, never at the front         32
+    median time from placement to front 0.33 s
+    filled orders at the front no later than their first fill: 99.88%
+    the 32 filled without reaching it were behind 15 orders; how those ended:
+      MARGIN_CANCELED        11
+      SELF_TRADE_CANCELED    4

@@ -14,7 +14,7 @@ import polars as pl
 from hypermm.ingest import book_diffs, orders, trades
 from hypermm.reconstruct.book import with_top_of_book
 from hypermm.reconstruct.outcomes import outcomes
-from hypermm.reconstruct.queue import with_queue_position
+from hypermm.reconstruct.queue import with_front, with_queue_position
 from hypermm.reconstruct.timing import with_time
 
 STATUS_COLUMNS = (
@@ -46,8 +46,8 @@ def read_statuses(raw: str | Path, date: str, hour: int, coin: str) -> pl.DataFr
 
 
 def rebuild(changes: pl.DataFrame, statuses: pl.DataFrame) -> pl.DataFrame:
-    """Queue position, then time, then top of book -- each step needs the one before."""
-    return with_top_of_book(with_time(with_queue_position(changes), statuses))
+    """Queue position, front of queue, time, top of book -- each needs the frame before."""
+    return with_top_of_book(with_time(with_front(with_queue_position(changes)), statuses))
 
 
 def load_hour(

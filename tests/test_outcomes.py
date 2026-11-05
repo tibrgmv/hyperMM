@@ -7,10 +7,13 @@ T0 = 1_764_593_360_000_000_000
 S = 1_000_000_000  # секунда
 
 
-def diffs(*events):
-    """events: (oid, kind, size, volumeAhead, second)."""
+def diffs(*events, front=None):
+    """events: (oid, kind, size, volumeAhead, second); front: {row: frontSeq}."""
+    front = front or {}
     return pl.DataFrame(
         {
+            "seq": list(range(len(events))),
+            "frontSeq": [front.get(i) for i in range(len(events))],
             "oid": [e[0] for e in events],
             "kind": [e[1] for e in events],
             "size": [e[2] for e in events],
@@ -20,7 +23,7 @@ def diffs(*events):
             "isAsk": [False] * len(events),
             "px": [12629000000] * len(events),
         },
-        schema_overrides={"ts": pl.UInt64, "volumeAhead": pl.Int64},
+        schema_overrides={"ts": pl.UInt64, "volumeAhead": pl.Int64, "frontSeq": pl.Int64},
     )
 
 
@@ -54,6 +57,33 @@ def test_an_order_filled_in_full_is_an_observed_event():
     assert table["outcome"].to_list() == [FILLED]
     assert table["filled"].to_list() == [True]
     assert table["duration"].to_list() == [7 * S]
+
+
+def test_the_time_an_order_reached_the_front_is_the_time_of_that_change():
+    # order 2 queues behind 1 and leads the level once 1 leaves at second 3
+    table = outcomes(
+        diffs(
+            (1, NEW, 100, 0, 0),
+            (2, NEW, 50, 100, 1),
+            (1, REMOVE, 0, None, 3),
+            front={0: 0, 1: 2},
+        ),
+        trades(),
+    ).sort("oid")
+    assert table["tFront"].to_list() == [T0, T0 + 3 * S]
+
+
+def test_durations_keep_every_nanosecond():
+    # placed at an odd nanosecond, filled 7 s and 13 ns later: mixing the Int64 trade
+    # clock with the UInt64 book clock must not round through floating point
+    odd = 123_456_789
+    table = outcomes(
+        diffs((1, NEW, 100, 0, 0), (1, REMOVE, 0, None, 9)).with_columns(
+            ts=pl.col("ts") + odd
+        ),
+        trades((1, 99, 100, 7)).with_columns(ts=pl.col("ts") + odd + 13),
+    )
+    assert table["duration"].to_list() == [7 * S + 13]
 
 
 def test_an_order_cancelled_untouched_is_censored_by_its_owner():

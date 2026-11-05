@@ -3,7 +3,8 @@
 Backs the journal entries of 24 August 2026: «Открытый вопрос: сокращения размера
 без события об исполнении», «Разрешение вопроса: поток статусов не сообщает о трети
 исполнений мейкера», «Этап 3: разметка исходов», «Находка: позиция в очереди
-предсказывает исполнение монотонно», «Находка: цензурирование не второстепенно».
+предсказывает исполнение монотонно», «Находка: цензурирование не второстепенно»,
+and the entry of 4 November 2026 on the front of the queue.
 
 Usage: python scripts/report_fills.py [--date 20251201] [--hour 12] [--coins SOL BTC]
 """
@@ -18,6 +19,7 @@ from hypermm.ingest.codes import Status
 from hypermm.ingest.schema import SCALE
 from hypermm.pipeline import load_hour, read_changes, read_fills
 from hypermm.reconstruct.outcomes import CANCELLED, check, maker_fills
+from hypermm.reconstruct.queue import LEVEL
 
 NS = 1e9
 DECILES = 10
@@ -140,6 +142,48 @@ def censoring(table: pl.DataFrame) -> None:
     ))
 
 
+def still_ahead(top: pl.DataFrame, oid: int) -> pl.DataFrame:
+    """Orders that arrived before `oid` and still rested when it was first reduced."""
+    own = top.filter(pl.col("oid") == oid)
+    placed = own.filter(pl.col("kind") == NEW).row(0, named=True)
+    reduced = own.filter(pl.col("kind") != NEW)["seq"].min()
+    return (
+        top.filter(*(pl.col(c) == placed[c] for c in LEVEL))
+        .with_columns(arrival=pl.col("seq").min().over("oid"))
+        .filter((pl.col("arrival") < placed["seq"]) & (pl.col("seq") <= reduced))
+        .sort("seq")
+        .group_by("oid")
+        .agg(pl.col("size").last(), pl.col("ts").last())
+        .filter(pl.col("size") > 0)
+    )
+
+
+def queue_front(top: pl.DataFrame, statuses: pl.DataFrame, table: pl.DataFrame) -> None:
+    """Strict time priority: an order can only be filled once nothing rests ahead of it."""
+    front = table.filter(pl.col("tFront").is_not_null())
+    filled = table.filter("filled")
+    print(f"    reached the front of its queue     {share(front.height, table.height)}")
+    print(f"    filled, having reached the front   {share(front['filled'].sum(), front.height)}")
+    print(f"    filled, never at the front         {table.filter(pl.col('tFront').is_null())['filled'].sum()}")
+    print(f"    median time from placement to front {(front['tFront'] - front['tPlaced']).median() / NS:.2f} s")
+    print(f"    filled orders at the front no later than their first fill: "
+          f"{share((filled['tFront'] <= filled['tFirstFill']).sum(), filled.height)}")
+
+    jumped = filled.filter(pl.col("tFront").is_null())["oid"].to_list()
+    if not jumped:
+        return
+    blockers = pl.concat([still_ahead(top, oid) for oid in jumped]).unique("oid")
+    last_status = (
+        statuses.filter(pl.col("oid").is_in(blockers["oid"].implode()))
+        .sort("ts")
+        .group_by("oid")
+        .agg(pl.col("statusId").last())
+    )
+    print(f"    the {len(jumped)} filled without reaching it were behind {blockers.height} orders; how those ended:")
+    for status, n in last_status.group_by("statusId").len().sort("len", descending=True).iter_rows():
+        print(f"      {Status(status).name:<22} {n}")
+
+
 def main() -> None:
     args = arguments(__doc__)
     changes = read_changes(args.raw, args.date, args.hour)
@@ -157,6 +201,9 @@ def main() -> None:
         outcome_table(hour.table)
         queue_deciles(hour.table)
         censoring(hour.table)
+
+        section(f"{coin}: front of the queue")
+        queue_front(hour.top, hour.statuses, hour.table)
 
 
 if __name__ == "__main__":

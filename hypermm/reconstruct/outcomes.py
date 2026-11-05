@@ -59,7 +59,9 @@ def outcomes(diffs: pl.DataFrame, trades: pl.DataFrame) -> pl.DataFrame:
         pl.col("ts").alias("tPlaced"),
         pl.col("size").alias("restingSize"),
         "volumeAhead",
+        "frontSeq",
     )
+    fronts = diffs.select(pl.col("seq").alias("frontSeq"), pl.col("ts").alias("tFront"))
     removed = diffs.filter(pl.col("kind") == REMOVE).group_by("oid").agg(
         pl.col("ts").max().alias("tRemoved")
     )
@@ -69,10 +71,15 @@ def outcomes(diffs: pl.DataFrame, trades: pl.DataFrame) -> pl.DataFrame:
         pl.len().alias("fills"),
     )
 
-    ended = pl.coalesce("tFirstFill", "tRemoved", pl.lit(window_end))
+    # Trade times are Int64 and book times UInt64; mixed, they would meet as Float64 and
+    # lose the last nanoseconds, so every time is taken as Int64 before they meet.
+    ended = pl.coalesce(
+        "tFirstFill", pl.col("tRemoved").cast(pl.Int64), pl.lit(window_end).cast(pl.Int64)
+    )
     
     return (
-        placed.join(removed, on="oid", how="left")
+        placed.join(fronts, on="frontSeq", how="left")
+        .join(removed, on="oid", how="left")
         .join(filled, on="oid", how="left")
         .with_columns(
             filledSize=pl.col("filledSize").fill_null(0),
@@ -80,7 +87,7 @@ def outcomes(diffs: pl.DataFrame, trades: pl.DataFrame) -> pl.DataFrame:
         )
         .with_columns(
             filled=pl.col("tFirstFill").is_not_null(),
-            duration=(ended - pl.col("tPlaced")).cast(pl.Int64),
+            duration=ended - pl.col("tPlaced").cast(pl.Int64),
             outcome=pl.when(pl.col("filledSize") >= pl.col("restingSize"))
             .then(pl.lit(FILLED))
             .when(pl.col("tRemoved").is_not_null())

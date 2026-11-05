@@ -1,0 +1,78 @@
+
+==============================================================================
+SOL: Avellaneda–Stoikov clock, calibrated on the hour
+==============================================================================
+    reaching δ = 0.5 / 1.5 / 2.5 ticks from the mid, per side per hour:
+      observed                                 1,209 / 203 / 102
+      weighted   A 0.5111/s  k 1.0475/tick   1,090 / 382 / 134
+      unweighted A 0.2269/s  k 0.7445/tick   563 / 267 / 127
+
+==============================================================================
+SOL: each rule against the real outcome
+==============================================================================
+    orders 518,409; filled 0.85%
+    rule              says filled   × real   false, of unfilled   missed, of filled   timing vs real fill, ms (p10 / median / p90)
+    touch                   5.16%     6.07                4.34%               0.05%       -384 / 0 / 0
+    volume-through          0.29%     0.34                0.02%              68.60%          0 / 0 / 451,456
+    queue-aware             0.89%     1.05                0.04%               0.09%          0 / 0 / 0
+    clock, weighted         8.70%    10.23   (a probability: no single order is right or wrong)
+    clock, unweighted        6.16%     7.25   (a probability: no single order is right or wrong)
+    filled, % by decile of volume ahead at placement
+    decile    real   touch  volume   queue   clock
+         0    3.24    7.09    2.09    3.40    9.26
+         1    1.16    5.95    0.30    1.20    9.54
+         2    0.84    5.22    0.18    0.88    9.03
+         3    0.74    4.66    0.10    0.78    7.84
+         4    0.56    4.12    0.06    0.58    7.01
+         5    0.52    4.01    0.06    0.55    6.88
+         6    0.48    3.87    0.03    0.50    7.26
+         7    0.46    4.35    0.04    0.47    8.18
+         8    0.30    5.35    0.01    0.32   10.02
+         9    0.19    6.94    0.00    0.22   11.94
+
+==============================================================================
+SOL: where the rules go wrong
+==============================================================================
+    orders that queued behind someone and reached the front: 24,167
+    volume ahead that left by cancellation: 98.17% of all; median per order 100.00%
+    false fills 217: the trade fell in the block where the order was cancelled 201, reached the front 90, either 210
+    missed fills 4: never at the front 2
+
+==============================================================================
+BTC: Avellaneda–Stoikov clock, calibrated on the hour
+==============================================================================
+    reaching δ = 0.5 / 1.5 / 2.5 ticks from the mid, per side per hour:
+      observed                                 4,791 / 1,096 / 868
+      weighted   A 0.5657/s  k 0.1235/tick   1,914 / 1,692 / 1,496
+      unweighted A 0.0629/s  k 0.0550/tick   220 / 208 / 197
+
+==============================================================================
+BTC: each rule against the real outcome
+==============================================================================
+    orders 1,610,840; filled 1.61%
+    rule              says filled   × real   false, of unfilled   missed, of filled   timing vs real fill, ms (p10 / median / p90)
+    touch                   7.57%     4.71                6.06%               0.00%       -496 / 0 / 0
+    volume-through          0.76%     0.47                0.04%              55.26%          0 / 0 / 60,137
+    queue-aware             1.65%     1.02                0.04%               0.13%          0 / 0 / 0
+    clock, weighted         9.91%     6.16   (a probability: no single order is right or wrong)
+    clock, unweighted        2.85%     1.78   (a probability: no single order is right or wrong)
+    filled, % by decile of volume ahead at placement
+    decile    real   touch  volume   queue   clock
+         0    3.83    4.15    3.66    3.92    4.78
+         1    0.67    0.84    0.39    0.68    1.50
+         2    1.38    2.09    0.65    1.41    3.98
+         3    2.41    5.31    0.94    2.48    9.95
+         4    1.90    5.10    0.56    1.95   10.47
+         5    1.56    5.83    0.38    1.61   10.53
+         6    1.36    6.25    0.31    1.39   10.19
+         7    1.27    9.29    0.22    1.30   12.15
+         8    1.05   14.52    0.24    1.07   15.13
+         9    0.50   22.19    0.07    0.52   20.28
+
+==============================================================================
+BTC: where the rules go wrong
+==============================================================================
+    orders that queued behind someone and reached the front: 185,014
+    volume ahead that left by cancellation: 94.47% of all; median per order 100.00%
+    false fills 667: the trade fell in the block where the order was cancelled 625, reached the front 269, either 660
+    missed fills 33: never at the front 32

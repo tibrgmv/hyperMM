@@ -2,7 +2,7 @@ import polars as pl
 import pytest
 
 from hypermm.ingest.book_diffs import NEW, REMOVE, UPDATE
-from hypermm.reconstruct.queue import check, with_queue_position
+from hypermm.reconstruct.queue import ahead_path, check, with_front, with_queue_position
 
 
 def book(*events):
@@ -112,3 +112,70 @@ def test_an_update_disagreeing_with_its_own_previous_size_is_caught():
 )
 def test_malformed_histories_are_caught(events, flag):
     assert check(with_queue_position(book(*events)))[flag] == 1
+
+
+def front(*events):
+    """frontSeq of each row, for events at one level as in `book`."""
+    return with_front(with_queue_position(book(*events)))["frontSeq"].to_list()
+
+
+def test_an_order_joining_an_empty_level_is_at_the_front_at_once():
+    assert front((1, NEW, 100, None)) == [0]
+
+
+def test_an_order_reaches_the_front_when_the_one_ahead_leaves():
+    assert front((1, NEW, 100, None), (2, NEW, 50, None), (1, REMOVE, 0, None)) == [0, 2, 0]
+
+
+def test_a_partial_fill_ahead_does_not_bring_the_front():
+    rows = front((1, NEW, 100, None), (2, NEW, 50, None), (1, UPDATE, 60, 100))
+    assert rows == [0, None, 0]
+
+
+def test_the_front_passes_down_the_queue_in_arrival_order():
+    rows = front(
+        (1, NEW, 100, None),
+        (2, NEW, 50, None),
+        (3, NEW, 20, None),
+        (2, REMOVE, 0, None),  # 3 still waits behind 1
+        (1, REMOVE, 0, None),  # 3 is now first
+    )
+    assert rows == [0, None, 4, None, 0]
+
+
+def test_an_order_cancelled_while_still_queued_never_reaches_the_front():
+    rows = front((1, NEW, 100, None), (2, NEW, 50, None), (2, REMOVE, 0, None))
+    assert rows == [0, None, None]
+
+
+def test_an_order_arriving_after_the_level_emptied_is_first_at_once():
+    rows = front((1, NEW, 100, None), (1, REMOVE, 0, None), (2, NEW, 50, None))
+    assert rows == [0, 0, 2]
+
+
+def test_other_levels_do_not_hold_an_order_back():
+    frame = book((1, NEW, 100, None), (2, NEW, 50, None)).with_columns(
+        px=pl.Series([12560000000, 12570000000])
+    )
+    assert with_front(with_queue_position(frame))["frontSeq"].to_list() == [0, 1]
+
+
+def test_the_path_ahead_falls_by_what_earlier_orders_lose_and_ignores_later_ones():
+    rebuilt = with_queue_position(
+        book(
+            (1, NEW, 100, None),
+            (2, NEW, 50, None),
+            (3, NEW, 20, None),  # the order followed
+            (4, NEW, 70, None),  # behind it: never counts
+            (1, UPDATE, 60, 100),
+            (4, REMOVE, 0, None),
+            (2, REMOVE, 0, None),
+            (1, REMOVE, 0, None),
+            (3, REMOVE, 0, None),
+        )
+    )
+    path = ahead_path(rebuilt, 3)
+    assert path["seq"].to_list() == [2, 4, 6, 7]
+    assert path["ahead"].to_list() == [150, 110, 60, 0]
+    # the path reaches zero exactly where with_front says the order led the level
+    assert with_front(rebuilt).filter(pl.col("oid") == 3)["frontSeq"][0] == 7

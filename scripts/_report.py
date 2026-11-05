@@ -7,7 +7,6 @@ files, so that a figure in the text can always be traced back to code.
 from __future__ import annotations
 
 import argparse
-import time
 from pathlib import Path
 
 from hypermm import config
@@ -31,10 +30,3 @@ def section(title: str) -> None:
 def share(part: float, whole: float) -> str:
     return f"{100 * part / whole:.2f}%" if whole else "—"
 
-
-class Stopwatch:
-    def __init__(self) -> None:
-        self.start = time.perf_counter()
-
-    def __str__(self) -> str:
-        return f"{time.perf_counter() - self.start:.1f} s"

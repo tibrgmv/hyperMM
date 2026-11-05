@@ -2,7 +2,7 @@
 ==============================================================================
 Level volume and queue position at placement
 ==============================================================================
-all coins, 6,598,460 changes, rebuilt in 7.2 s
+all coins, 6,598,460 changes
     coldStartRecovered        2,649
     coldStartLost             7,757
     negativeLevel                 0
@@ -24,10 +24,10 @@ all coins, 6,598,460 changes, rebuilt in 7.2 s
     SOL       554,751        2.12%      1,988.640    6,173.050
 
 ==============================================================================
-Attaching time to the book diff stream
+Attaching time; front of the queue
 ==============================================================================
 
-SOL: 1,115,559 changes, timed in 0.5 s
+SOL: 1,115,559 changes
     exact       1,109,424     99.45%
     carried         6,135      0.55%
     unknown             0      0.00%
@@ -35,8 +35,9 @@ SOL: 1,115,559 changes, timed in 0.5 s
     non-decreasing True, span 60.00 min
     orders with a rejection status that appear in book diffs: 0
     inherited time vs k-th `filled` status: n 3,516, median error 0.0 ms, within 100 ms 92.63%
+    SOL: front of queue, compiled replay vs single-order path: 200 of 200 queued orders agree
 
-BTC: 3,531,915 changes, timed in 1.9 s
+BTC: 3,531,915 changes
     exact       3,489,370     98.80%
     carried        42,545      1.20%
     unknown             0      0.00%
@@ -44,12 +45,13 @@ BTC: 3,531,915 changes, timed in 1.9 s
     non-decreasing True, span 60.00 min
     orders with a rejection status that appear in book diffs: 0
     inherited time vs k-th `filled` status: n 26,146, median error 0.0 ms, within 100 ms 93.76%
+    BTC: front of queue, compiled replay vs single-order path: 200 of 200 queued orders agree
 
 ==============================================================================
 Top of book
 ==============================================================================
 
-SOL: top of book over 1,115,559 changes in 0.4 s
+SOL: top of book over 1,115,559 changes
     crossed                 0
     emptyBid                0
     emptyAsk                2
@@ -61,7 +63,7 @@ SOL: top of book over 1,115,559 changes in 0.4 s
     median imbalance at the touch    +0.294
     |imbalance| above 0.5            85.9% of changes, 83.6% of time
 
-BTC: top of book over 3,531,915 changes in 0.2 s
+BTC: top of book over 3,531,915 changes
     crossed                 0
     emptyBid                1
     emptyAsk                0

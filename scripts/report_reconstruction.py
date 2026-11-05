@@ -2,7 +2,8 @@
 
 Backs the journal entries of 24 August 2026: «Этап 2, часть первая» (queue
 position, warm-up, the blocking checks), «Этап 2, часть вторая» (attaching time)
-and «Этап 2, часть третья» (top of book and its by-products).
+and «Этап 2, часть третья» (top of book and its by-products); and the entry of 4 November
+2026 on the front of the queue.
 
 Usage: python scripts/report_reconstruction.py [--date 20251201] [--hour 12] [--coins SOL BTC]
 """
@@ -11,7 +12,7 @@ from __future__ import annotations
 
 import numpy as np
 import polars as pl
-from _report import Stopwatch, arguments, section, share
+from _report import arguments, section, share
 
 from hypermm.ingest.book_diffs import NEW, UPDATE
 from hypermm.ingest.codes import Status
@@ -23,9 +24,8 @@ TWELFTHS = 12
 
 
 def queue_position(changes: pl.DataFrame) -> None:
-    clock = Stopwatch()
     rebuilt = queue.with_queue_position(changes)
-    print(f"all coins, {changes.height:,} changes, rebuilt in {clock}")
+    print(f"all coins, {changes.height:,} changes")
     for name, n in queue.check(rebuilt).items():
         print(f"    {name:<22} {n:>8,}")
     placements = rebuilt.filter(pl.col("kind") == NEW).height
@@ -54,10 +54,9 @@ def queue_position(changes: pl.DataFrame) -> None:
 
 
 def attach_time(rebuilt: pl.DataFrame, statuses: pl.DataFrame, coin: str) -> pl.DataFrame:
-    clock = Stopwatch()
     timed = timing.with_time(rebuilt, statuses)
     counts = timing.check(timed)
-    print(f"\n{coin}: {timed.height:,} changes, timed in {clock}")
+    print(f"\n{coin}: {timed.height:,} changes")
     for name, n in counts.items():
         print(f"    {name:<10} {n:>10,}   {share(n, timed.height):>8}")
 
@@ -95,9 +94,8 @@ def attach_time(rebuilt: pl.DataFrame, statuses: pl.DataFrame, coin: str) -> pl.
 
 
 def top_of_book(timed: pl.DataFrame, coin: str) -> None:
-    clock = Stopwatch()
     top = book.with_top_of_book(timed)
-    print(f"\n{coin}: top of book over {top.height:,} changes in {clock}")
+    print(f"\n{coin}: top of book over {top.height:,} changes")
     for name, n in book.check(top).items():
         print(f"    {name:<18} {n:>6,}")
 
@@ -124,6 +122,24 @@ def top_of_book(timed: pl.DataFrame, coin: str) -> None:
           f" {100 * (lasted * lopsided).sum() / lasted.sum():.1f}% of time")
 
 
+def front_agrees(rebuilt: pl.DataFrame, coin: str, sample: int = 200) -> None:
+    """Two independent routes to the moment an order leads its level must agree.
+
+    `with_front` replays every level once in compiled code; `ahead_path` follows a
+    single order with frame operations. The first change at which the path hits
+    zero has to be the change `with_front` names.
+    """
+    fronted = queue.with_front(rebuilt)
+    queued = fronted.filter((pl.col("kind") == NEW) & (pl.col("volumeAhead") > 0))
+    picked = queued.sample(min(sample, queued.height), seed=0)
+    agree = 0
+    for oid, front_seq in picked.select("oid", "frontSeq").iter_rows():
+        zero = queue.ahead_path(rebuilt, oid).filter(pl.col("ahead") == 0)
+        agree += (zero["seq"][0] if zero.height else None) == front_seq
+    print(f"    {coin}: front of queue, compiled replay vs single-order path:"
+          f" {agree} of {picked.height} queued orders agree")
+
+
 def main() -> None:
     args = arguments(__doc__)
     changes = read_changes(args.raw, args.date, args.hour)
@@ -131,13 +147,14 @@ def main() -> None:
     section("Level volume and queue position at placement")
     queue_position(changes)
 
-    section("Attaching time to the book diff stream")
+    section("Attaching time; front of the queue")
     timed = {}
     for coin in args.coins:
         statuses = read_statuses(args.raw, args.date, args.hour, coin)
         # rebuilt per coin, as the pipeline does
         own = queue.with_queue_position(changes.filter(pl.col("coin") == coin))
         timed[coin] = attach_time(own, statuses, coin)
+        front_agrees(own, coin)
 
     section("Top of book")
     for coin, frame in timed.items():

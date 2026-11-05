@@ -15,9 +15,10 @@ design, hypotheses (H1-H5) and methodology.
 
 ## Status
 
-Stages 1–3 of 10 done: ingest, book and queue reconstruction, outcomes of
-passive orders (one hour, 2025-12-01 12:00 UTC, BTC and SOL). Next: the four
-fill models (`fillsim`). Progress and decisions: `docs/JOURNAL.md`.
+Done: ingest, book and queue reconstruction, outcomes of passive orders, the
+front of the queue, and the four fill models measured against real outcomes
+(one hour, 2025-12-01 12:00 UTC, BTC and SOL). Next: RQ5 (in-block cancellation)
+and survival analysis. Progress and decisions: `docs/JOURNAL.md`.
 
 ## Setup
 
@@ -58,6 +59,7 @@ python scripts/check_block_semantics.py data/raw/order_statuses/20251201/btc_12.
 python scripts/report_streams.py          # stream contents and cross-stream agreement
 python scripts/report_reconstruction.py   # queue, time, top of book
 python scripts/report_fills.py            # makers, status-stream gaps, outcomes
+python scripts/report_fill_models.py      # four fill models against real outcomes
 python scripts/report_price_accuracy.py   # docs/PRICE_ACCURACY.md
 ```
 

@@ -1,0 +1,48 @@
+
+==============================================================================
+SOL: orders at the front meeting a trade at their price
+==============================================================================
+                          encounters     filled      saved      other
+    all                          4,618     94.95%      4.35%      0.69%
+    front in an earlier block    2,168     93.91%      5.54%      0.55%
+
+==============================================================================
+SOL: the fill rules with the exchange's in-block order
+==============================================================================
+    rule              × real: ignoring blocks / cancels first    false fills: ignoring / cancels first
+    touch                        6.067 / 5.400                     22,323 / 19,385   (of 514,004 unfilled)
+    volume-through               0.336 / 0.315                         99 / 3   (of 514,004 unfilled)
+    queue-aware                  1.048 / 1.003                        217 / 16   (of 514,004 unfilled)
+
+==============================================================================
+SOL: what the saved fills would have been worth
+==============================================================================
+    markout, bps (mean ± s.e.)        filled               saved     saved − filled
+    after  1 s                      -0.435 ± 0.038    -0.708 ± 0.139    -0.274  (-1.9 s.e.)
+    after 10 s                      +0.240 ± 0.117    -1.282 ± 0.461    -1.522  (-3.2 s.e.)
+    after 60 s                      +0.736 ± 0.291    +0.675 ± 1.456    -0.061  (-0.0 s.e.)
+    (filled 4,385, saved 201)
+
+==============================================================================
+BTC: orders at the front meeting a trade at their price
+==============================================================================
+                          encounters     filled      saved      other
+    all                         26,528     97.18%      2.36%      0.46%
+    front in an earlier block   12,575     96.56%      3.11%      0.33%
+
+==============================================================================
+BTC: the fill rules with the exchange's in-block order
+==============================================================================
+    rule              × real: ignoring blocks / cancels first    false fills: ignoring / cancels first
+    touch                        4.711 / 4.270                     96,085 / 84,669   (of 1,584,946 unfilled)
+    volume-through               0.471 / 0.448                        611 / 23   (of 1,584,946 unfilled)
+    queue-aware                  1.024 / 1.000                        667 / 42   (of 1,584,946 unfilled)
+
+==============================================================================
+BTC: what the saved fills would have been worth
+==============================================================================
+    markout, bps (mean ± s.e.)        filled               saved     saved − filled
+    after  1 s                      -0.387 ± 0.014    -0.670 ± 0.060    -0.283  (-4.6 s.e.)
+    after 10 s                      -0.980 ± 0.041    -0.956 ± 0.297    +0.024  (+0.1 s.e.)
+    after 60 s                      -1.667 ± 0.093    -2.868 ± 0.678    -1.201  (-1.8 s.e.)
+    (filled 25,781, saved 625)

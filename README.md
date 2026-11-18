@@ -15,10 +15,11 @@ design, hypotheses (H1-H5) and methodology.
 
 ## Status
 
-Done: ingest, book and queue reconstruction, outcomes of passive orders, the
-front of the queue, and the four fill models measured against real outcomes
-(one hour, 2025-12-01 12:00 UTC, BTC and SOL). Next: RQ5 (in-block cancellation)
-and survival analysis. Progress and decisions: `docs/JOURNAL.md`.
+Done on one hour (2025-12-01 12:00 UTC, BTC and SOL): ingest, book and queue
+reconstruction, outcomes of passive orders, the front of the queue, the four fill
+models against real outcomes, and RQ5 (cancellation inside the aggressor's
+block). Next: more hours of data, then survival analysis. Progress and decisions:
+`docs/JOURNAL.md`.
 
 ## Setup
 
@@ -60,6 +61,7 @@ python scripts/report_streams.py          # stream contents and cross-stream agr
 python scripts/report_reconstruction.py   # queue, time, top of book
 python scripts/report_fills.py            # makers, status-stream gaps, outcomes
 python scripts/report_fill_models.py      # four fill models against real outcomes
+python scripts/report_block_protection.py # RQ5: cancellation inside the aggressor's block
 python scripts/report_price_accuracy.py   # docs/PRICE_ACCURACY.md
 ```
 

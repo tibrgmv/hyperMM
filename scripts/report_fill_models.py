@@ -14,11 +14,11 @@ import numpy as np
 import polars as pl
 from _report import arguments, section, share
 
+from hypermm.fillcheck.judge import RULES, judge
 from hypermm.fillsim import models
 from hypermm.pipeline import load_hour, read_changes, read_fills
 
 WARM_UP = 5 * 60 * models.NS
-RULES = {"touch": "tTouch", "volume-through": "tVolume", "queue-aware": "tQueue"}
 DECILES = 10
 
 
@@ -130,12 +130,9 @@ def main() -> None:
         section(f"{coin}: Avellaneda–Stoikov clock, calibrated on the hour")
         fits = calibration(hour.top, trades)
 
-        end = pl.col("tPlaced").cast(pl.Int64) + pl.col("duration")
-        judged = (
-            models.predict(hour.table, hour.top, hour.fills)
-            .filter(pl.col("tPlaced") >= hour.top["ts"].min() + WARM_UP)
-            .with_columns(
-                **{f"{c}Within": (pl.col(c) <= end).fill_null(False) for c in RULES.values()}
+        judged = judge(
+            models.predict(hour.table, hour.top, hour.fills).filter(
+                pl.col("tPlaced") >= hour.top["ts"].min() + WARM_UP
             )
         )
         a, k = fits["unweighted"]

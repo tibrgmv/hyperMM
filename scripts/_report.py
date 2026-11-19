@@ -31,6 +31,10 @@ def arguments(doc: str) -> argparse.Namespace:
         action="store_true",
         help="rebuild each hour between its neighbours (reports that support it)",
     )
+    parser.add_argument(
+        "--grid", action="store_true",
+        help="the full grid of strategy configurations (report_backtest.py)",
+    )
     args = parser.parse_args()
     if args.hours is None:
         args.hours = [args.hour]

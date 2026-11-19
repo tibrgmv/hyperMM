@@ -1,0 +1,46 @@
+
+==============================================================================
+SOL: ex ante -- what is knowable at placement
+==============================================================================
+    train hours 0-10: 999,992 orders, 1.07% filled; test hours 12-23: 999,994 orders, 0.93% filled
+    features: 12 (16 for 'more features'); boosting stopped at 439 / 414 trees
+    model                         C     AUC 1s  AUC 5s  AUC 30s    Brier skill 1s / 5s / 30s    log-lik skill
+    exp. clock                  0.796   0.844   0.888   0.845       -2.811 / -2.721 / -2.448       -2.1911
+    Cox                         0.919   0.931   0.930   0.897       +0.067 / +0.136 / +0.171       +0.1775
+    boosting (ceiling)          0.931   0.939   0.941   0.922       +0.100 / +0.200 / +0.177       +0.2383
+    boosting, more features     0.933   0.941   0.943   0.925       +0.099 / +0.208 / +0.171       +0.2390
+
+==============================================================================
+SOL: ex ante -- share of the ceiling, by test hour
+==============================================================================
+    C: mean over 12 test hours [95% interval]        share of the ceiling [95% interval]
+    exp. clock                0.805 [0.794, 0.815]             71.1% [68.6%, 74.2%]
+    Cox                       0.917 [0.911, 0.923]             97.4% [96.8%, 98.1%]
+    boosting (ceiling)        0.928 [0.921, 0.934]            100.0% [100.0%, 100.0%]
+    boosting, more features   0.930 [0.924, 0.936]            100.4% [100.0%, 100.9%]
+    AUC 1s: mean over 12 test hours [95% interval]        share of the ceiling [95% interval]
+    exp. clock                0.847 [0.840, 0.855]             80.0% [78.2%, 82.0%]
+    Cox                       0.927 [0.920, 0.934]             98.4% [97.8%, 99.0%]
+    boosting (ceiling)        0.934 [0.926, 0.940]            100.0% [100.0%, 100.0%]
+    boosting, more features   0.936 [0.928, 0.942]            100.5% [100.0%, 101.0%]
+    AUC 5s: mean over 12 test hours [95% interval]        share of the ceiling [95% interval]
+    exp. clock                0.896 [0.889, 0.902]             89.8% [88.2%, 91.4%]
+    Cox                       0.930 [0.926, 0.934]             97.6% [97.0%, 98.1%]
+    boosting (ceiling)        0.941 [0.937, 0.944]            100.0% [100.0%, 100.0%]
+    boosting, more features   0.943 [0.940, 0.946]            100.5% [100.3%, 100.8%]
+    AUC 30s: mean over 12 test hours [95% interval]        share of the ceiling [95% interval]
+    exp. clock                0.853 [0.833, 0.871]             83.6% [79.6%, 87.4%]
+    Cox                       0.898 [0.887, 0.906]             94.3% [92.9%, 95.5%]
+    boosting (ceiling)        0.922 [0.916, 0.927]            100.0% [100.0%, 100.0%]
+    boosting, more features   0.925 [0.918, 0.930]            100.7% [100.4%, 101.0%]
+
+==============================================================================
+SOL: ex post -- the realised outcome within the order's life (ceiling: 1)
+==============================================================================
+    rule                           × real      AUC   share of attainable   Brier skill
+    placement only, boosting         0.98   0.8854               77.1%         0.073
+    exp. clock, given the life      10.44   0.6647               32.9%        -3.905
+    touch                            6.52   0.9741               94.8%        -4.573
+    volume-through                   0.34   0.6568               31.4%         0.285
+    queue-aware                      1.04   0.9991               99.8%         0.958
+    queue-aware, block               1.00   0.9993               99.9%         0.996

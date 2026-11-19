@@ -139,6 +139,28 @@ def by_hour(met: pl.DataFrame) -> None:
     )
 
 
+def clustered(met: pl.DataFrame) -> None:
+    """The gap saved − filled with the hour as the cluster: orders within an hour share
+    its market, so the hourly gaps, not the orders, are the independent observations."""
+    print("    saved − filled markout, bps: mean of hourly gaps ± s.e. over hours")
+    for seconds in HORIZONS:
+        column = pl.col(f"markout{seconds}")
+        gaps = (
+            met.group_by("hour")
+            .agg(
+                gap=column.filter(pl.col("ending") == "saved").mean()
+                - column.filter(pl.col("ending") == "filled").mean()
+            )["gap"]
+            .drop_nulls()
+        )
+        se = gaps.std() / gaps.len() ** 0.5
+        print(f"    after {seconds:>2} s    {gaps.mean():>+7.3f} ± {se:.3f}  ({gaps.mean() / se:+.1f} s.e.,"
+              f" {gaps.len()} hours, negative in {(gaps < 0).sum()})")
+    saved = met.group_by("hour").agg(share=(pl.col("ending") == "saved").mean())["share"]
+    se = saved.std() / saved.len() ** 0.5
+    print(f"    saved share: mean of hours {100 * saved.mean():.2f}% ± {100 * se:.2f}%")
+
+
 def main() -> None:
     args = arguments(__doc__)
     reader = Reader(args.raw)
@@ -175,6 +197,8 @@ def main() -> None:
         if len(args.hours) > 1:
             section(f"{coin}: hour by hour")
             by_hour(pooled)
+            section(f"{coin}: with the hour as the cluster")
+            clustered(pooled)
 
 
 if __name__ == "__main__":

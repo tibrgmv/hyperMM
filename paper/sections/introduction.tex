@@ -27,41 +27,36 @@ lets us ask, and answer, a question that has so far been inaccessible:
 \emph{how much does the unobservable fill assumption change the conclusions of a
 market-making backtest?}
 
-\paragraph{Contributions.}
-\begin{enumerate}
-  \item \textbf{Ground truth for fill rules.} From the three streams of the
-  dataset we rebuild, for every real passive order, its queue position, the
-  moment it reaches the front, and its true outcome
-  (Sections~\ref{sec:reconstruction}--\ref{sec:outcomes}).
-  \item \textbf{Fill models confronted with real outcomes.} We apply four fill
-  rules to real orders, for which the true outcome is known, and measure each
-  rule's error separately from any strategy (Section~\ref{sec:fillmodels}). The
-  two standard rules err in opposite directions by a factor of two to six, for
-  one shared reason.
-  \item \textbf{Fill time as a survival problem.} Using the factorisation of
-  the fill probability into reaching the front of the queue and meeting an
-  aggressor there, we model the time to fill from features known at placement.
-  On hours it never saw, the model ranks fill times with a concordance of
-  0.81--0.86, against 0.77--0.78 for the exponential-intensity clock, the only one of the four rules that, like it, uses
-  nothing beyond the moment of placement (Section~\ref{sec:survival}).
-  \item \textbf{The value of in-block cancellation priority.} We measure how
-  often a cancellation processed in the same block as an aggressor rescues an
-  order from being filled, show that this is the only systematic error of a
-  queue-aware rule, and estimate what the rescued fills would have been worth
-  (Section~\ref{sec:block}).
-  \item \textbf{What the fill assumption does to a backtest.} We backtest
-  Avellaneda--Stoikov, GLFT, symmetric and queue-aware quoting strategies under
-  each fill rule. Changing only the fill rule changes the same strategy's PnL by
-  up to \tbd{} and its Sharpe ratio by up to \tbd, and the ranking of strategies
-  agrees across rules with a Kendall $\tau$ of \tbd{}
-  (Section~\ref{sec:backtest}).
-  \item \textbf{A second substitution.} We show that candle-based backtests also
-  fabricate the execution price of aggressive orders, and that the resulting
-  gift per round trip is bounded below by the full spread
-  (Section~\ref{sec:price}).
-\end{enumerate}
-All results hold across \tbd{} hours of December 2025, three instruments
-(\BTC, \ETH, \SOL) and calm and volatile regimes.
+We answer in three steps, each resting on the one before.
+
+\paragraph{Step one: how wrong the rules are.}
+We rebuild the queue in front of every real passive order and compare each fill
+rule with what actually happened (Section~\ref{sec:fillmodels}). The touch rule
+overstates fills five- to seven-fold and the candle rule of bar-based backtests
+by far more; the volume-through rule understates them two- to three-fold. Both
+errors have one cause: more than 94\% of the volume queued ahead of an order
+leaves by cancellation, not by trading. A rule can also rank orders almost
+perfectly and still be worse, as a yes/no answer, than assuming that nothing is
+ever filled.
+
+\paragraph{Step two: what it takes to be right.}
+A rule that follows the queue comes within a few percent of the truth, and its
+whole remaining error is the exchange's processing order within a block:
+cancellations are taken before aggressors, which rescues 3--4\% of orders that a
+trade would otherwise have filled. With that rule the model reproduces the
+observed fills to within 0.3\% (Section~\ref{sec:block}). We then ask how far one
+can get without order-level data (Section~\ref{sec:learned}), and how much of an
+order's fate can be known when it is placed at all: fill times can be ranked
+with a concordance of at most 0.92--0.93, yet placement-time information explains
+little of which orders are actually filled (Section~\ref{sec:knowable}).
+
+\paragraph{Step three: what the error does to a backtest.}
+We backtest 48 variants of twelve families of quoting strategies under each fill
+rule, changing nothing else (Section~\ref{sec:backtest}). Under the validated
+rule 47 of them lose money on every instrument. The touch rule flatters 75--92\%
+of them; the exponential clock turns 83--90\% of the losses into profits and
+ranks the strategies in an order unrelated to the true one. Neither error is a
+uniform shift: each rewards a particular style of quoting.
 
 \paragraph{Reproducibility.}
 Every number in this paper is printed by a script in the accompanying

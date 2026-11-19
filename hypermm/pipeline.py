@@ -17,7 +17,7 @@ from __future__ import annotations
 from collections import OrderedDict
 from collections.abc import Sequence
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import polars as pl
@@ -92,6 +92,12 @@ def load_hour(
     return Hour(coin, statuses, fills, top, outcomes(top, fills))
 
 
+def hour_bounds(date: str, hour: int) -> tuple[int, int]:
+    """Start and end of an hourly file's hour, in ns since the epoch (UTC)."""
+    start = datetime.strptime(date, "%Y%m%d").replace(tzinfo=UTC) + timedelta(hours=hour)
+    return int(start.timestamp()) * NS, int((start + timedelta(hours=1)).timestamp()) * NS
+
+
 def chain(frames: Sequence[pl.DataFrame]) -> pl.DataFrame:
     """Consecutive hourly book diff files as one stream: `seq` runs on across files.
 
@@ -111,16 +117,22 @@ class Reader:
     missing file reads as None, so a window simply stops where the data stops.
     """
 
-    def __init__(self, raw: str | Path, keep: int = 4):
+    def __init__(self, raw: str | Path, keep: int = 3):  # a window is three hours
         self.raw, self.keep = Path(raw), keep
-        self._cache: OrderedDict[tuple, pl.DataFrame | None] = OrderedDict()
+        self._cache: dict[tuple, pl.DataFrame | None] = {}
+        self._hours: OrderedDict[datetime, None] = OrderedDict()  # least recently used first
 
     def _get(self, key: tuple, path: Path, read):
+        """Keys are (kind, hour, ...): everything of the `keep` hours used last is kept."""
+        at = key[1]
         if key not in self._cache:
             self._cache[key] = read() if path.exists() else None
-            while len(self._cache) > self.keep * 6:  # changes + fills + statuses of a few coins
-                self._cache.popitem(last=False)
-        self._cache.move_to_end(key)
+        self._hours[at] = None
+        self._hours.move_to_end(at)
+        while len(self._hours) > self.keep:
+            stale, _ = self._hours.popitem(last=False)
+            for old in [k for k in self._cache if k[1] == stale]:
+                del self._cache[old]
         return self._cache[key]
 
     def changes(self, at: datetime) -> pl.DataFrame | None:

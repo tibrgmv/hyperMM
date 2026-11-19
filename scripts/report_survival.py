@@ -8,9 +8,11 @@ own: the volume ahead, the distance behind the best price, and the distance from
 the mid-price -- the only thing the exponential clock of Avellaneda--Stoikov
 prices a fill by, so its concordance is the clock's.
 
-Each hour is rebuilt between its neighbours (pipeline.load_window).
+Each hour is rebuilt between its neighbours and read from the cache of order tables
+(hypermm/fillcheck/dataset.py). Training hours come first, one buffer hour is left
+out, test hours follow.
 
-Usage: python scripts/report_survival.py [--date 20251201] [--train 0-11] [--test 12-23]
+Usage: python scripts/report_survival.py [--date 20251201] [--train 0-10] [--test 12-23]
                                          [--coins SOL BTC] [--sample 1000000]
 
 Over a full day an instrument has millions of orders; a random sample of each of
@@ -23,34 +25,26 @@ import argparse
 import warnings
 from pathlib import Path
 
-import polars as pl
 from _report import COINS_WITH_STATUSES, hour_list, section, share
 
 from hypermm import config
-from hypermm.fillcheck.survival import STAGES, concordance, fit_cox, survival_table
-from hypermm.pipeline import Reader, load_window
+from hypermm.fillcheck.dataset import load_sample
+from hypermm.fillcheck.survival import STAGES, concordance, fit_cox
+from hypermm.pipeline import Reader
 
 BASELINES = {
     "volume ahead": "logAhead",
-    "ticks behind best": "ticksBehind",
-    "ticks from mid (clock)": "ticksFromMid",
+    "ticks behind best": "logBehind",
+    "ticks from mid (clock)": "logFromMid",
 }
-
-
-def table(reader: Reader, date: str, hours: list[int], coin: str) -> pl.DataFrame:
-    parts = []
-    for hour in hours:
-        rebuilt = load_window(reader, date, hour, coin)
-        parts.append(survival_table(rebuilt.table, rebuilt.top, rebuilt.fills))
-    return pl.concat(parts)
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument("--raw", type=Path, default=config.DATA_RAW_DIR)
     parser.add_argument("--date", default="20251201")
-    parser.add_argument("--train", type=hour_list, default=hour_list("12"))
-    parser.add_argument("--test", type=hour_list, default=hour_list("13"))
+    parser.add_argument("--train", type=hour_list, default=hour_list("0-10"))
+    parser.add_argument("--test", type=hour_list, default=hour_list("12-23"))
     parser.add_argument("--coins", nargs="+", default=list(COINS_WITH_STATUSES))
     parser.add_argument(
         "--sample", type=int, default=1_000_000,
@@ -61,13 +55,9 @@ def main() -> None:
     reader = Reader(args.raw)
 
     for coin in args.coins:
-        train = table(reader, args.date, args.train, coin)
-        test = table(reader, args.date, args.test, coin)
-        drawn = ""
-        if args.sample:
-            drawn = f"; {args.sample:,} orders drawn from each of {train.height:,} / {test.height:,}"
-            train = train.sample(min(args.sample, train.height), seed=0)
-            test = test.sample(min(args.sample, test.height), seed=0)
+        train = load_sample(reader, args.date, args.train, coin, args.sample)
+        test = load_sample(reader, args.date, args.test, coin, args.sample)
+        drawn = f"; about {args.sample:,} orders drawn from each side" if args.sample else ""
         section(f"{coin}: train hours {args.train}, test hours {args.test}")
         if drawn:
             print(f"    {drawn[2:]}")

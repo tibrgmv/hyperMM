@@ -1,0 +1,62 @@
+\subsection{What is knowable at placement}
+\label{sec:knowable}
+\label{sec:survival}
+\label{sec:ceiling}
+The rules so far read the market \emph{after} the order was placed. A strategy
+deciding where to quote needs the answer before: how soon is an order placed now
+likely to be filled? Most orders are withdrawn before they could have been
+filled (Section~\ref{sec:outcomes}), so this is a time-to-event problem under
+heavy censoring. We fit two models on features known just before placement---side,
+size, volume ahead, distance from the best price and from the mid, spread,
+imbalance, and recent trading and price moves, on a logarithmic scale
+(Appendix~\ref{app:survival})---and compare them with the exponential clock, which
+uses the distance from the mid alone. The first is a Cox proportional-hazards
+model. The second, gradient-boosted trees for the discrete-time fill hazard, is
+the strongest model we could fit, and its held-out score is our estimate of the
+\emph{ceiling}: what this description of the book supports. Models are fitted on
+hours 0--10 and scored on hours 12--23, with hour 11 left out as a buffer.
+
+An order cancelled before it was filled is not a miss; its fill time is only
+known to exceed its life. We use the time-dependent concordance $C$ of
+\citet{antolini2005time}, the censoring-weighted AUC at three horizons, and the
+right-censored log-likelihood, a proper scoring rule \citep{arroyo2024deep}, as a
+skill against the marginal Kaplan--Meier curve. The weighting assumes that
+cancellation is independent of the fill time, which the previous subsection
+shows to be false; the bias is common to the models compared.
+
+\begin{table*}[t]
+\centering\small
+\caption{Ex ante: predicting the time to fill from the state at placement.
+Mean over the twelve held-out hours of the time-dependent concordance $C$ and of
+the censoring-weighted AUC at three horizons, each with the share~\eqref{eq:share} of the ceiling it
+recovers, and the right-censored log-likelihood as a skill against the marginal
+Kaplan--Meier curve (negative: worse than ignoring the features). The ceiling is
+boosting on the twelve features the Cox model uses; the last row of each block
+adds four features and shows how far the ceiling moves with them.}
+\label{tab:exante}
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{@{}ll rr rr rr rr r@{}}
+\toprule
+ & & \multicolumn{2}{c}{$C$} & \multicolumn{2}{c}{AUC, 1\,s} & \multicolumn{2}{c}{AUC, 5\,s} & \multicolumn{2}{c}{AUC, 30\,s} & log-lik. \\
+\cmidrule(lr){3-4}\cmidrule(lr){5-6}\cmidrule(lr){7-8}\cmidrule(lr){9-10}
+ & Model & score & share & score & share & score & share & score & share & skill \\
+\midrule
+\inputrows{tables/ceiling_ante_rows.tex}
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\paragraph{The ceiling is below one.}
+On held-out hours the boosted model reaches a concordance of 0.92--0.93 and an
+AUC of 0.92--0.97 (Table~\ref{tab:exante}); four further features move it by at
+most 1.2\% of the attainable. The Cox model recovers 93--97\% of the attainable
+concordance. The exponential clock recovers 71\%: its ranking is serviceable,
+but its probabilities are not---its log-likelihood skill is negative on every
+instrument ($-1.0$ to $-2.2$), worse than ignoring the order's features.
+
+\paragraph{Most of an order's fate is settled after it is placed.}
+Scored against the realised outcome as the rules of Table~\ref{tab:expost} are,
+boosted trees on placement-time features rank orders well (AUC 0.87--0.93) but
+their Brier skill is 0.01--0.07 on \ETH{} and \SOL{} and 0.24 on \BTC; the
+queue-aware rule, with the market record in hand, reaches 0.996. At placement one
+can tell which orders are more likely to be filled, hardly which ones will be.

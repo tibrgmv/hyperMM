@@ -1,3 +1,5 @@
+import math
+
 import polars as pl
 import pytest
 
@@ -80,6 +82,8 @@ def test_features_describe_the_book_before_the_order_arrived():
     # imbalance on the order's own side, before it: (300 - 200) / 500 and (50 - 200) / 250
     assert out["imbalance"].to_list() == [pytest.approx(0.2), pytest.approx(-0.6)]
     assert out["emptyLevel"].to_list() == [False, True]
+    # the model reads the measurements on a signed logarithmic scale
+    assert out["logBehind"].to_list() == [0, pytest.approx(-math.log(2))]
     # mids before them: 10 050 and 10 000 -- half a tick and no distance
     assert out["ticksFromMid"].to_list() == [pytest.approx(0.5), pytest.approx(0)]
 

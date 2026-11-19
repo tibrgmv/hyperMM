@@ -30,18 +30,40 @@ from hypermm.fillsim.models import NS, level_trades, tick
 STAGES = ("front", "fill", "total")
 
 WINDOWS = (1, 10)  # seconds of recent trading and price movement
+# What is measured, in its own units: ticks and counts. Distances reach thousands of
+# ticks, so a model linear in them is ruled by a few far-away orders; the features
+# below are their signed logarithms, sign(x)·log(1 + |x|). (On the day of 1 December
+# 2025 a Cox model on the raw measurements ranked BTC fills worse than the distance
+# from the mid alone; on the logarithms it is within a few points of the ceiling.)
+SCALED = {
+    "logBehind": "ticksBehind",
+    "logFromMid": "ticksFromMid",
+    "logSpread": "spreadTicks",
+    **{f"logTrades{w}s": f"trades{w}s" for w in WINDOWS},
+    **{f"logMove{w}s": f"move{w}s" for w in WINDOWS},
+}
+RAW = tuple(SCALED.values())
 FEATURES = (
     "isAsk",
     "logSize",
     "logAhead",
     "emptyLevel",
-    "ticksBehind",
-    "ticksFromMid",
-    "spreadTicks",
+    "logBehind",
+    "logFromMid",
+    "logSpread",
     "imbalance",
-    *(f"trades{w}s" for w in WINDOWS),
-    *(f"move{w}s" for w in WINDOWS),
+    *(f"logTrades{w}s" for w in WINDOWS),
+    *(f"logMove{w}s" for w in WINDOWS),
 )
+# Further book-state features, read only by the ceiling model (fillcheck/ceiling.py):
+# depth at the best prices, and activity and price range over the last minute.
+EXTRA = ("logBestOwn", "logBestOther", "logTrades60s", "logAbsMove60s")
+
+
+def signed_log(x: pl.Expr) -> pl.Expr:
+    return x.sign() * x.abs().log1p()
+
+
 SCALE = 1e8  # prices and sizes are integers in units of 1e-8
 
 
@@ -146,16 +168,23 @@ def survival_table(table: pl.DataFrame, top: pl.DataFrame, fills: pl.DataFrame) 
             / step,
             spreadTicks=(pl.col("bestAskBefore") - pl.col("bestBidBefore")) / step,
             imbalance=(own_volume - other_volume) / (own_volume + other_volume),
+            logBestOwn=(own_volume / SCALE).log1p(),
+            logBestOther=(other_volume / SCALE).log1p(),
         )
     )
     out = out.with_columns(
         **{f"trades{w}s": _recent_trades(out, trades, w) for w in WINDOWS},
         **{f"move{w}s": _recent_move(out, top, w, step) for w in WINDOWS},
+        logTrades60s=_recent_trades(out, trades, 60).log1p(),
+        logAbsMove60s=_recent_move(out, top, 60, step).abs().log1p(),
     )
+    out = out.with_columns(**{name: signed_log(pl.col(raw)) for name, raw in SCALED.items()})
     return out.select(
         "oid",
         "tPlaced",
         *FEATURES,
+        *EXTRA,
+        *RAW,
         frontDuration=pl.when(reached).then(front - placed).otherwise(pl.col("duration")) / NS,
         frontEvent=reached,
         fillDuration=pl.when(reached).then(end - front) / NS,
@@ -260,17 +289,20 @@ class FillModel:
             before = market.mid(t - seconds * NS)
             return 0.0 if before is None else (book.mid - before) / step * towards
 
+        raw = {
+            "ticksBehind": behind / step,
+            "ticksFromMid": abs(px - book.mid) / step,
+            "spreadTicks": (book.ask - book.bid) / step,
+            **{f"trades{w}s": float(market.recent_blocks(is_ask, t, w)) for w in WINDOWS},
+            **{f"move{w}s": move(w) for w in WINDOWS},
+        }
         values = {
             "isAsk": float(is_ask),
             "logSize": np.log(params.lot_size),
             "logAhead": np.log1p(ahead / SCALE),
             "emptyLevel": float(ahead == 0),
-            "ticksBehind": behind / step,
-            "ticksFromMid": abs(px - book.mid) / step,
-            "spreadTicks": (book.ask - book.bid) / step,
             "imbalance": (own - other) / (own + other) if own + other else 0.0,
-            **{f"trades{w}s": float(market.recent_blocks(is_ask, t, w)) for w in WINDOWS},
-            **{f"move{w}s": move(w) for w in WINDOWS},
+            **{name: np.sign(raw[r]) * np.log1p(abs(raw[r])) for name, r in SCALED.items()},
         }
         return np.array([values[f] for f in FEATURES])
 

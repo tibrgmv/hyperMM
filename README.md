@@ -15,11 +15,18 @@ design, hypotheses (H1-H5) and methodology.
 
 ## Status
 
-Done on one hour (2025-12-01 12:00 UTC, BTC and SOL): ingest, book and queue
-reconstruction, outcomes of passive orders, the front of the queue, the four fill
-models against real outcomes, and RQ5 (cancellation inside the aggressor's
-block). Next: more hours of data, then survival analysis. Progress and decisions:
-`docs/JOURNAL.md`.
+Data: one full day, 2025-12-01, BTC, ETH and SOL (`scripts/fetch_data.py`).
+
+| research question | state |
+|---|---|
+| RQ1 fill rules against real outcomes | done on the pilot hour; censoring-aware metric panel still to do |
+| RQ2 ceiling of predictability, normalised scores | done on the day: `fillcheck/ceiling.py`, `report_ceiling.py` |
+| RQ3 what the fill rule does to a backtest | 48 strategy variants x 5 rules on the day; fees, Sharpe-based ranking, deflated Sharpe and the ~150-configuration grid still to do |
+| RQ4 robustness | not started beyond three instruments and reaction speed |
+| RQ5 in-block cancellation | done on the pilot hour; the day still to do |
+
+The research proposal is `RP_ВКР_HMM.pdf`; the paper is in `paper/`. Progress and
+decisions: `docs/JOURNAL.md`.
 
 ## Setup
 
@@ -34,27 +41,31 @@ uv pip install -e ".[ml,viz]"
 
 ```
 hypermm/
-├── pipeline.py    # one hour of one coin: raw files -> rebuilt book -> outcome table
+├── pipeline.py    # raw files -> rebuilt book -> outcome table; one hour alone or chained to its neighbours
 ├── ingest/        # raw An Open Book streams -> typed frames
 ├── reconstruct/   # L4 book + exact queue position reconstruction
 ├── fillsim/       # 4 fill models: naive touch / exponential clock / volume-through / queue-aware
-├── fillcheck/     # validates fill models against real order outcomes (survival analysis)
-├── toxicity/      # lookahead-free wallet-resolved toxicity signal + markout
-├── strategies/    # A-S / GLFT / symmetric quoters / queue-aware heuristics
-├── backtest/      # backtest engine, PnL accounting (interval-valued)
-├── evaluate/      # fill-gap, ranking statistics, robustness cuts; market-order price accuracy
+├── fillcheck/     # fill rules against real outcomes; survival model; ceiling of predictability; cached order tables
+├── toxicity/      # markout
+├── strategies/    # 48 quoting variants in 12 families (A-S, GLFT, ladders, filters, ...)
+├── backtest/      # the rebuilt market as a strategy sees it, fill rules for orders never in the book, engine
+├── evaluate/      # market-order price accuracy
 └── replay_ui/     # export of one hour for the web page in web/
-scripts/           # check_* diagnostics and report_* scripts behind the journal's numbers
-docs/reports/      # reference output of the report scripts, per hour
+scripts/           # fetch_data, check_* diagnostics, report_* behind every number, figures and tables of the paper
+docs/reports/      # reference output of the report scripts: 20251201_12/ (pilot hour), 20251201_day/
+paper/             # the paper (LaTeX): `tectonic -X compile main.tex`
 web/               # static replay page
 ```
 
-## Reproducing the journal
+## Reproducing the numbers
 
-Every number in `docs/JOURNAL.md` comes from one of these, run on the hour in
-`data/raw/`; the reference output is in `docs/reports/20251201_12/`.
+Every number in `docs/JOURNAL.md` and in the paper is printed by one of these;
+reference output is in `docs/reports/`.
 
 ```bash
+python scripts/fetch_data.py --date 20251201 --hours 0-23 --coins btc sol eth   # ~4.4 GB
+
+# the pilot hour (2025-12-01 12:00), docs/reports/20251201_12/
 python scripts/check_block_semantics.py data/raw/order_statuses/20251201/btc_12.data.gz \
                                         data/raw/order_statuses/20251201/sol_12.data.gz
 python scripts/report_streams.py          # stream contents and cross-stream agreement
@@ -63,6 +74,15 @@ python scripts/report_fills.py            # makers, status-stream gaps, outcomes
 python scripts/report_fill_models.py      # four fill models against real outcomes
 python scripts/report_block_protection.py # RQ5: cancellation inside the aggressor's block
 python scripts/report_price_accuracy.py   # docs/PRICE_ACCURACY.md
+
+# the day, docs/reports/20251201_day/ (one file per coin: redirect the output there)
+python scripts/build_orders.py --hours 0-23 --coins SOL ETH BTC   # cached order tables
+python scripts/report_survival.py --coins SOL    # fill time: Cox model by stage
+python scripts/report_ceiling.py --coins SOL     # RQ2: ceiling of predictability
+python scripts/report_backtest.py --hours 0-23 --coins SOL   # RQ3: strategies x fill rules
+
+# the paper
+python scripts/paper_tables.py && python scripts/figures.py
 ```
 
 ## Data

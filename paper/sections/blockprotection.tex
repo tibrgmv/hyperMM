@@ -1,5 +1,12 @@
-\section{Protection by in-block cancellation}
+\section{Step two: what it takes to be right}
 \label{sec:block}
+
+Section~\ref{sec:fillmodels} left the queue-aware rule within a few percent of the
+truth. This section closes the remaining gap, asks whether the rule can be
+approached without order-level data, and asks what can be known before the
+market has moved at all.
+
+\subsection{The exchange's in-block order}
 
 Within a block, Hyperliquid processes cancellations before aggressors
 (Section~\ref{sec:reconstruction}). A market maker who sees an informed aggressor coming
@@ -7,7 +14,7 @@ and cancels in the same block is therefore protected: the cancellation wins,
 even though the aggressor's order and the cancellation are, in time, the same.
 On a venue with continuous matching the same race would be decided by latency.
 
-\subsection{Encounters}
+\paragraph{Encounters.}
 We call an \emph{encounter} the first trade at an order's price after the order
 reached the front of its queue, within its life. Under strict time priority such
 a trade fills the order---unless the order was cancelled in the same block. An
@@ -18,41 +25,42 @@ that it led the level when the trade arrived.
 
 \begin{table}[t]
 \centering\small
-\caption{How encounters end, pilot hour. ``Settled'': the order reached the front
-in an earlier block than the trade.}
+\caption{How encounters end, 1~December 2025, all 24 hours. ``Settled'': the order
+reached the front in an earlier block than the trade. The range is over hours.}
 \label{tab:encounters}
-\begin{tabular}{@{}lrr@{}}
+\footnotesize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}lrrr@{}}
 \toprule
- & \SOL & \BTC \\
+ & \BTC & \ETH & \SOL \\
 \midrule
-Encounters & 4\,618 & 26\,528 \\
-Filled & 94.95\% & 97.18\% \\
-\textbf{Rescued by in-block cancellation} & \textbf{4.35\%} & \textbf{2.36\%} \\
-Rescued, settled encounters & 5.54\% & 3.11\% \\
+Encounters & 591\,775 & 243\,874 & 130\,947 \\
+Filled & 96.83\% & 95.86\% & 95.40\% \\
+\textbf{Rescued in the block} & \textbf{2.73\%} & \textbf{3.46\%} & \textbf{4.04\%} \\
+Rescued, settled encounters & 3.11\% & 4.36\% & 5.08\% \\
+Rescued, by hour: min--max & 0.8--4.3\% & 1.4--5.1\% & 1.7--6.2\% \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Roughly one encounter in twenty to thirty ends not in a fill but in a
+Over the day, one encounter in twenty-five to forty ends not in a fill but in a
 cancellation that the exchange processed before the trade
-(Table~\ref{tab:encounters}). Over the full sample the rescued share is
-\tbd{} for \BTC, \tbd{} for \ETH{} and \tbd{} for \SOL, and it ranges from \tbd{}
-to \tbd{} across hours.
+(Table~\ref{tab:encounters}). The share varies several-fold from hour to hour but
+is never negligible.
 
-\subsection{The block rule in fill models}
+\paragraph{The block rule in fill models.}
 We add to each rule a block variant: a trade in the block in which a not-yet-filled
-order was cancelled does not fill it. Table~\ref{tab:blockrule} shows the effect.
-With the block rule, \qa{} matches the observed fill rate exactly, leaving 16 and
-42 false fills among half a million and one and a half million unfilled orders.
-The block rule also removes 12--13\% of \touch's false fills, so cancellations
-often fall in blocks with trading at the order's price even when the order is
-not yet at the front.
+order was cancelled does not fill it (Table~\ref{tab:blockrule}). With the block
+rule \qa{} matches the observed number of fills to within 0.3\% on every
+instrument, and its false fills fall fifteen- to eighteen-fold on \BTC{} and \SOL{}
+and ten-fold on \ETH. The block rule also removes 12--14\% of \touch's false fills,
+so cancellations often fall in blocks with trading at the order's price even when
+the order is not yet at the front.
 
 \begin{table}[t]
 \centering\small
 \caption{Fill rules without and with the exchange's in-block order
 (``block'': a trade in the block where the order was cancelled does not fill
-it): fill rate over the observed one, and false fills.}
+it), all 24 hours: fills over the observed number, and false fills.}
 \label{tab:blockrule}
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{@{}l cc rr@{}}
@@ -61,45 +69,36 @@ it): fill rate over the observed one, and false fills.}
 \cmidrule{2-3}\cmidrule{4-5}
 Rule & plain & block & plain & block \\
 \midrule
-\multicolumn{5}{@{}l}{\SOL} \\
-\touch & 6.07 & 5.40 & 22\,323 & 19\,385 \\
-\vt    & 0.34 & 0.32 & 99 & 3 \\
-\qa    & 1.05 & \textbf{1.00} & 217 & \textbf{16} \\
 \multicolumn{5}{@{}l}{\BTC} \\
-\touch & 4.71 & 4.27 & 96\,085 & 84\,669 \\
-\vt    & 0.47 & 0.45 & 611 & 23 \\
-\qa    & 1.02 & \textbf{1.00} & 667 & \textbf{42} \\
+\touch & 4.86 & 4.39 & 2\,221\,763 & 1\,948\,141 \\
+\vt    & 0.43 & 0.41 & 13\,535 & 282 \\
+\qa    & 1.028 & \textbf{1.000} & 17\,154 & \textbf{980} \\
+\multicolumn{5}{@{}l}{\ETH} \\
+\touch & 7.25 & 6.46 & 1\,466\,610 & 1\,281\,722 \\
+\vt    & 0.41 & 0.38 & 7\,108 & 115 \\
+\qa    & 1.039 & \textbf{1.003} & 9\,410 & \textbf{968} \\
+\multicolumn{5}{@{}l}{\SOL} \\
+\touch & 6.12 & 5.41 & 641\,883 & 553\,894 \\
+\vt    & 0.36 & 0.34 & 3\,041 & 97 \\
+\qa    & 1.043 & \textbf{1.001} & 5\,669 & \textbf{384} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Stated as the cost of ignoring block semantics: a fill model unaware of the
-in-block processing order credits a strategy with 4.6\% too many fills on \SOL{}
-(201 against 4\,405 real ones) and 2.4\% on \BTC{} (625 against 25\,894)---exactly
-the fills from which a cancellation in fact protected the order.
+Stated as the cost of ignoring block semantics: a queue-aware fill model unaware
+of the in-block processing order credits a strategy with 2.8\% too many fills on
+\BTC, 3.6\% on \ETH{} and 4.2\% on \SOL---the fills from which a cancellation in
+fact protected the order.
 
-\subsection{What the rescued fills would have been worth}
-The markout of a fill at horizon $h$ is its gain against the mid-price $h$
-later, in basis points of its price, signed by side: positive if the fill paid,
-negative if the price went on through the order. For real fills it is taken at
-the fill; for rescued ones at the encounter, as if the fill had happened. A
-horizon past the end of observation is left undefined.
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=\columnwidth]{markout}
-\caption{Markout of real fills and of fills rescued by in-block cancellation,
-mean with 95\% confidence interval, at three horizons. Pilot hour.}
-\label{fig:markout}
-\end{figure}
-
-Rescued fills would have been worse than real ones at the one-second horizon, by
-0.27--0.28\bps{} on both instruments (4.6 standard errors on \BTC), and on \SOL{}
-also at ten seconds, by 1.52\bps{} (3.2 standard errors;
-Figure~\ref{fig:markout}). This is consistent with the
-rescuing cancellations being a response to the same information that moved the
-aggressor: in-block priority protects market makers precisely against toxic
-flow. At one minute the difference is not distinguishable in this sample.
-Pooled over the full sample, with standard errors clustered by hour, the
-one-second gap is \tbd\bps{} (\tbd{} s.e.) for \BTC, \tbd\bps{} (\tbd{} s.e.) for
-\ETH{} and \tbd\bps{} (\tbd{} s.e.) for \SOL.
+\subsection{Who is rescued, and from what}
+In-block priority is open to every maker, but makers use it very unequally. Among
+those with at least 200 encounters in the day, the share ending in a rescue runs
+from zero to 10--17\%, with a median of 3.6--4.7\%, and the largest maker is
+rescued least: on \BTC{} a single address accounts for 35\% of all encounters and
+is rescued in 0.2\% of them. Whether the rescued fills would have been worse than
+the fills makers accept depends on the instrument. Comparing one-second markouts
+hour by hour, rescued fills would have been worse by 0.24\bps{} on \SOL{} (5.5
+standard errors across the 24 hours, negative in 22 of them), by 0.10\bps{} on
+\ETH{} (1.9 standard errors) and not at all on \BTC{} ($-0.01$\bps). The block rule
+changes how many fills a maker receives on every instrument; that it shields
+makers from the worst fills holds on one of three.

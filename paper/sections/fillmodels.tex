@@ -1,4 +1,4 @@
-\section{Fill models against real outcomes}
+\section{Step one: how wrong the fill rules are}
 \label{sec:fillmodels}
 
 \subsection{Design}
@@ -106,6 +106,60 @@ count falls only from 1\,096 to 868). Like \touch, the clock ignores the queue;
 across deciles its answer rises with queue depth on \BTC{} from 4.8\% to 20.3\%
 while the real rate falls.
 
+\subsection{The candle rule}
+\label{sec:candles}
+The most widespread backtest of all runs on bars, and fills a buy limit order
+once a bar's low reaches its price. This is \touch{} at the resolution of a bar,
+and the bar does not know \emph{when} within it the price was there. We apply
+the rule to every real order of the day: it fires if any bar overlapping the
+order's life reached its price (Table~\ref{tab:candles}).
+
+\begin{table}[t]
+\centering\small
+\caption{The candle rule on real orders, all 24 hours: fills it declares over
+the observed number. Top: all passive orders. Bottom: only orders that rested for
+at least one bar, the ones a bar backtest could have placed, with the trade-level
+\touch{} rule on the same orders.}
+\label{tab:candles}
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{@{}l rrr@{}}
+\toprule
+ & \BTC & \ETH & \SOL \\
+\midrule
+\multicolumn{4}{@{}l}{All orders} \\
+Bars of 15 min & 51.6 & 95.1 & 95.9 \\
+Bars of 5 min  & 49.3 & 90.4 & 90.7 \\
+Bars of 1 min  & 43.5 & 79.0 & 78.0 \\
+\touch, trade by trade & 4.9 & 7.3 & 6.1 \\
+\qa, block & 1.00 & 1.00 & 1.00 \\
+\addlinespace
+\multicolumn{4}{@{}l}{Orders resting at least one bar} \\
+Bars of 15 min & 2.36 & 3.57 & 3.68 \\
+\quad \touch, trade by trade & 1.02 & 1.02 & 1.04 \\
+Bars of 5 min  & 3.48 & 5.26 & 5.19 \\
+\quad \touch, trade by trade & 1.03 & 1.03 & 1.07 \\
+Bars of 1 min  & 6.85 & 8.80 & 7.60 \\
+\quad \touch, trade by trade & 1.08 & 1.09 & 1.18 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+On all orders the rule declares 65--93\% of them filled, against 1.0--1.5\% in
+reality: the typical order lives half a second, and the bar credits it with every
+touch of its price in a minute or a quarter of an hour. Requiring the bar to go
+strictly through the price changes this by less than a tenth. That comparison is
+harsh, since a bar backtest cannot hold an order for less than a bar. Restricted
+to orders that rested for at least one bar, the candle rule still overstates
+fills 2.4--3.7 times on 15-minute bars and 6.9--8.8 times on one-minute bars.
+
+For these long-lived orders the trade-level \touch{} rule is nearly right
+(1.02--1.18): an order that rests for minutes outlasts the queue ahead of it, and
+a touch then does mean a fill. The candle rule's error on them is therefore not
+the queue. It is the bar's resolution in time: the first and last bars of an
+order's life include trading before it was placed and after it was withdrawn.
+The two errors are distinct. Ignoring the queue ruins the backtest of a fast
+strategy; the bar ruins that of a slow one.
+
 \subsection{One cause, two errors}
 The two standard event rules err in opposite directions, and for one reason:
 cancellations ahead in the queue. \touch{} ignores the queue entirely;
@@ -113,3 +167,54 @@ cancellations ahead in the queue. \touch{} ignores the queue entirely;
 queue reproduces the facts, but it requires the stream of book changes with
 order identities---data at the L4 level.
 
+\subsection{Ranking is not accuracy}
+\label{sec:expost}
+Counting fills hides which orders a rule gets wrong, so we also score each rule
+order by order against the realised outcome within the order's observed life.
+Given the order-level record matching is deterministic, so the attainable score
+is one. We report the AUC---for a yes/no rule, its balanced accuracy---as a share
+of the distance from the uninformative 0.5 to the attainable,
+\begin{equation}
+\label{eq:share}
+\text{share} = \frac{\text{score} - 0.5}{\text{ceiling} - 0.5},
+\end{equation}
+and, because the AUC does not charge a rule for answering ``filled'' too often,
+the Brier skill: one minus the ratio of the rule's mean squared error to that of
+always answering the base rate. A skill of one is perfect, zero is no better than
+the base rate, and a negative value is worse than assuming that no order is ever
+filled. Orders are those of hours 12--23, the hours held out in
+Section~\ref{sec:knowable}.
+
+\begin{table*}[t]
+\centering\small
+\caption{Ex post: reproducing the realised outcome of an order within its
+observed life, held-out hours. The ceiling is one: given the order-level record,
+matching is deterministic. AUC (for a yes/no rule, its balanced accuracy), its
+share~\eqref{eq:share} of the attainable, and the Brier skill against the base
+rate. The first row uses placement-time features only and does not know the
+order's life (Section~\ref{sec:knowable}); \clock{} is the clock used as a fill rule, given the life.}
+\label{tab:expost}
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{@{}l rrr c rrr c rrr@{}}
+\toprule
+ & \multicolumn{3}{c}{\BTC} && \multicolumn{3}{c}{\ETH} && \multicolumn{3}{c}{\SOL} \\
+\cmidrule{2-4}\cmidrule{6-8}\cmidrule{10-12}
+ & AUC & share & Brier && AUC & share & Brier && AUC & share & Brier \\
+\midrule
+\inputrows{tables/ceiling_post_rows.tex}
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\paragraph{Ex post, ranking and accuracy part ways.}
+\touch{} separates filled from unfilled orders almost perfectly---94--95\% of the
+attainable AUC---because every fill is preceded by a touch
+(Table~\ref{tab:expost}). As an answer to whether an order was filled it is worse
+than assuming that nothing is ever filled: its Brier skill is $-2.6$ to $-5.4$.
+The clock used as a fill rule fails on both counts. \vt{} is the reverse of
+\touch: a poor ranker (31--40\%) with a modest positive skill (0.29--0.37), since
+it rarely says ``filled'' wrongly. \qa{} recovers 99.8--99.9\% of the AUC with a
+skill of 0.96--0.97, and the block rule lifts the skill to 0.996--0.997. By
+accuracy the rules stand in the order \touch{} $<$ \clock{} $<$ \vt{} $<$ \qa; by
+ranking they do not, and a comparison on the AUC alone would rate the rule that
+overstates fills five-fold next to the one that is right.

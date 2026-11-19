@@ -42,6 +42,8 @@ class Run:
     fills: list[tuple[int, bool, int]] = field(default_factory=list)  # time, is_ask, px
     marks: list[tuple[int, float]] = field(default_factory=list)  # time, PnL in quote currency
     orders: int = 0
+    quoted: int = 0  # quotes asked for, summed over decisions: orders resting x time
+    depth: float = 0.0  # ticks behind the best price on their side, summed over quotes
 
     @property
     def pnl(self) -> float:
@@ -105,6 +107,12 @@ def run(
         view = View(t, book, lots, (t - start) / NS, resting, market)
         bids, asks = strategy.quote(view)
         wanted = {(False, px) for px in bids} | {(True, px) for px in asks}
+        tick = strategy.p.tick
+        out.quoted += len(wanted)
+        if book.bid is not None:
+            out.depth += sum(book.bid - px for px in bids) / tick
+        if book.ask is not None:
+            out.depth += sum(px - book.ask for px in asks) / tick
 
         for key in [key for key in live if key not in wanted]:
             order = live.pop(key)

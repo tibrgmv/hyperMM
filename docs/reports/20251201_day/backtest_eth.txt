@@ -104,16 +104,16 @@ ETH: 48 strategies under five fill rules, 20251201, hours 0-23
     short queue 0.75          queue-aware           23,149   -3741.77         -1.616            -1.305             -1.54
     short queue 0.75          queue-aware, block    20,648   -3373.66         -1.634            -1.329             -1.41
     short queue 0.75          clock                 42,689    -785.38         -0.184            -0.038             -0.74
-    survival 0.5              touch                 49,181   -2966.38         -0.603            -0.349             -1.46
-    survival 0.5              volume-through        17,306   -3489.09         -2.016            -1.680             -1.38
-    survival 0.5              queue-aware           22,121   -3705.62         -1.675            -1.327             -1.42
-    survival 0.5              queue-aware, block    19,602   -3368.44         -1.718            -1.363             -1.30
-    survival 0.5              clock                 38,331    -714.27         -0.186            -0.010             -0.67
-    survival 0.75             touch                 36,515   -3161.96         -0.866            -0.514             -1.59
-    survival 0.75             volume-through        15,684   -3237.16         -2.064            -1.681             -1.40
-    survival 0.75             queue-aware           19,250   -3389.32         -1.761            -1.383             -1.45
-    survival 0.75             queue-aware, block    17,026   -3076.96         -1.807            -1.441             -1.36
-    survival 0.75             clock                 26,008   -1109.96         -0.427            -0.193             -0.88
+    survival 0.5              touch                 51,435   -3068.61         -0.597            -0.332             -1.46
+    survival 0.5              volume-through        17,706   -3567.55         -2.015            -1.683             -1.41
+    survival 0.5              queue-aware           22,824   -3749.38         -1.643            -1.319             -1.45
+    survival 0.5              queue-aware, block    20,325   -3405.04         -1.675            -1.352             -1.34
+    survival 0.5              clock                 41,230    -712.19         -0.173            -0.019             -0.69
+    survival 0.75             touch                 39,493   -3317.96         -0.840            -0.492             -1.63
+    survival 0.75             volume-through        16,325   -3337.35         -2.044            -1.691             -1.43
+    survival 0.75             queue-aware           20,262   -3504.50         -1.730            -1.371             -1.47
+    survival 0.75             queue-aware, block    17,981   -3183.04         -1.770            -1.424             -1.36
+    survival 0.75             clock                 28,964   -1488.53         -0.514            -0.177             -0.93
     ladder 3                  touch                 89,126   -5992.91         -0.672            -0.511             -1.16
     ladder 3                  volume-through        35,067   -7414.38         -2.114            -1.796             -1.22
     ladder 3                  queue-aware           43,760   -7807.27         -1.784            -1.455             -1.27
@@ -250,7 +250,7 @@ ETH: does the fill rule change which strategy looks best?
 ==============================================================================
     all variants: 48 strategies
     rule                  Kendall tau  Spearman rho   sign differs   flattered   top 5 kept   best strategy
-    touch                        0.74          0.90             8%         75%          2 / 5   imbalance 0.3 @0.1s
+    touch                        0.73          0.90             8%         75%          2 / 5   imbalance 0.3 @0.1s
     volume-through               0.96          0.99             0%          6%          5 / 5   trade filter 5s
     queue-aware                  0.97          1.00             0%          0%          5 / 5   trade filter 5s
     queue-aware, block           1.00          1.00             0%          0%          5 / 5   trade filter 5s

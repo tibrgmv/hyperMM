@@ -18,30 +18,25 @@ Usage: python scripts/report_backtest.py [--date 20251201] [--hours 0-23] [--coi
 from __future__ import annotations
 
 import warnings
-from datetime import UTC, datetime, timedelta
 
 import numpy as np
 import polars as pl
 from _report import arguments, section
 from scipy.stats import kendalltau, spearmanr
 
+from hypermm import config
 from hypermm.backtest import engine
 from hypermm.backtest.fills import RULES
 from hypermm.backtest.market import Market
 from hypermm.fillcheck.survival import fit_fill_model, survival_table
 from hypermm.fillsim.models import NS
-from hypermm.pipeline import Reader, load_window
-from hypermm.strategies.quoters import BASELINE, VARIANTS, Params
+from hypermm.pipeline import Reader, hour_bounds, load_window
+from hypermm.strategies.quoters import BASELINE, GRID, VARIANTS, Params
 from hypermm.toxicity.markout import markout
 
 NOTIONAL = 1_000.0  # dollars per lot
 REFERENCE = "queue-aware, block"  # the rule that reproduces real fills (Section 7)
 TOP = 5
-
-
-def hour_bounds(date: str, hour: int) -> tuple[int, int]:
-    start = datetime.strptime(date, "%Y%m%d").replace(tzinfo=UTC) + timedelta(hours=hour)
-    return int(start.timestamp()) * NS, int((start + timedelta(hours=1)).timestamp()) * NS
 
 
 def calibrate(market: Market, start: int, end: int, survival: pl.DataFrame, lot: float) -> Params:
@@ -110,6 +105,7 @@ def main() -> None:
     warnings.filterwarnings("ignore")
     reader = Reader(args.raw)
 
+    variants, tag = (GRID, "_grid") if args.grid else (VARIANTS, "")
     for coin in args.coins:
         rows = []
         previous = None  # (market, start, end, survival table) of the hour before
@@ -126,7 +122,7 @@ def main() -> None:
                 own.append(hour)
                 previous = (market, start, end, survival)
             params = calibrate(*previous, lot)
-            for variant in VARIANTS:
+            for variant in variants:
                 for rule in RULES:
                     strategy = variant.build(params)
                     run = engine.run(
@@ -135,14 +131,19 @@ def main() -> None:
                     )
                     gains = fill_markout(run, window.top, end)
                     rows.append((hour, strategy.name, variant.family, rule, len(run.fills),
-                                 run.pnl, float(gains.sum()), gains.len()))
+                                 run.pnl, float(gains.sum()), gains.len(),
+                                 run.orders, run.quoted, run.depth, variant.step))
             previous = (market, start, end, survival)
 
         table = pl.DataFrame(
             rows,
-            schema=["hour", "strategy", "family", "rule", "fills", "pnl", "mkSum", "mkN"],
+            schema=["hour", "strategy", "family", "rule", "fills", "pnl", "mkSum", "mkN",
+                    "orders", "quoted", "depth", "step"],
             orient="row",
         )
+        raw = config.DATA_PROCESSED_DIR / "backtest"  # hourly rows, for later statistics
+        raw.mkdir(parents=True, exist_ok=True)
+        table.write_parquet(raw / f"{args.date}_{coin.lower()}{tag}.parquet")
         summary = per_variant(table)
         names = list(dict.fromkeys(summary["strategy"]))
         hours = f"{args.date}, hours {args.hours[0]}-{args.hours[-1]}"

@@ -1,0 +1,57 @@
+
+==============================================================================
+SOL: the candle rule against the real outcome, 20251201 hours 0-23
+==============================================================================
+    orders 12,984,303; filled 0.97%
+    rule                        says filled   × real   false, of unfilled   missed, of filled      AUC   Brier skill
+    candle  1 min, touch             75.43%    78.04              75.19%               0.00%   0.6241        -76.79
+    candle  1 min, through           71.10%    73.56              70.86%               4.93%   0.6210        -72.37
+    candle  5 min, touch             87.66%    90.70              87.54%               0.00%   0.5623        -89.58
+    candle  5 min, through           86.14%    89.12              86.02%               1.38%   0.5630        -88.01
+    candle 15 min, touch             92.69%    95.90              92.62%               0.00%   0.5369        -94.83
+    candle 15 min, through           92.00%    95.19              91.93%               0.51%   0.5378        -94.12
+    touch, trade by trade             5.91%     6.11               4.99%               0.01%   0.9750         -4.16
+    queue-aware, block                0.97%     1.00               0.00%               0.17%   0.9991          1.00
+    orders that rested at least one bar:
+    bar          orders   really filled   candle says   × real   false, of unfilled   touch by trade × real   queue-aware, block × real
+     1 min      233,306           4.74%        36.00%     7.60              32.82%                   1.18                        1.00
+     5 min       56,218           6.65%        34.51%     5.19              29.84%                   1.07                        1.00
+    15 min       21,654           6.43%        23.65%     3.68              18.40%                   1.04                        1.00
+
+==============================================================================
+ETH: the candle rule against the real outcome, 20251201 hours 0-23
+==============================================================================
+    orders 23,889,553; filled 0.98%
+    rule                        says filled   × real   false, of unfilled   missed, of filled      AUC   Brier skill
+    candle  1 min, touch             77.63%    78.98              77.41%               0.00%   0.6130        -77.75
+    candle  1 min, through           75.39%    76.70              75.17%               3.09%   0.6087        -75.51
+    candle  5 min, touch             88.88%    90.42              88.77%               0.00%   0.5562        -89.31
+    candle  5 min, through           88.15%    89.68              88.04%               0.77%   0.5559        -88.58
+    candle 15 min, touch             93.43%    95.05              93.36%               0.00%   0.5332        -93.99
+    candle 15 min, through           93.13%    94.75              93.06%               0.28%   0.5333        -93.68
+    touch, trade by trade             7.12%     7.25               6.20%               0.01%   0.9689         -5.31
+    queue-aware, block                0.99%     1.00               0.00%               0.15%   0.9992          0.99
+    orders that rested at least one bar:
+    bar          orders   really filled   candle says   × real   false, of unfilled   touch by trade × real   queue-aware, block × real
+     1 min      607,849           2.80%        24.61%     8.80              22.44%                   1.09                        1.00
+     5 min      130,735           3.86%        20.34%     5.26              17.14%                   1.03                        1.00
+    15 min       46,460           4.07%        14.55%     3.57              10.92%                   1.02                        1.00
+
+==============================================================================
+BTC: the candle rule against the real outcome, 20251201 hours 0-23
+==============================================================================
+    orders 38,403,080; filled 1.50%
+    rule                        says filled   × real   false, of unfilled   missed, of filled      AUC   Brier skill
+    candle  1 min, touch             65.11%    43.46              64.58%               0.00%   0.6771        -42.11
+    candle  1 min, through           64.21%    42.86              63.69%               1.54%   0.6738        -41.53
+    candle  5 min, touch             73.79%    49.25              73.39%               0.00%   0.6330        -47.98
+    candle  5 min, through           73.52%    49.07              73.12%               0.39%   0.6325        -47.81
+    candle 15 min, touch             77.34%    51.62              77.00%               0.00%   0.6150        -50.39
+    candle 15 min, through           77.23%    51.54              76.88%               0.14%   0.6149        -50.32
+    touch, trade by trade             7.28%     4.86               5.87%               0.01%   0.9706         -2.92
+    queue-aware, block                1.50%     1.00               0.00%               0.13%   0.9993          1.00
+    orders that rested at least one bar:
+    bar          orders   really filled   candle says   × real   false, of unfilled   touch by trade × real   queue-aware, block × real
+     1 min      650,511           3.41%        23.41%     6.85              20.70%                   1.08                        1.00
+     5 min      146,577           6.08%        21.16%     3.48              16.06%                   1.03                        1.00
+    15 min       62,014           7.11%        16.79%     2.36              10.43%                   1.02                        1.00

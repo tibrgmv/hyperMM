@@ -320,7 +320,53 @@ def _capped(strategy: Strategy, cap: int) -> Strategy:
     return strategy
 
 
+def _grid() -> list[Variant]:
+    """The grid of the ranking experiment: every family over its parameters, the
+    inventory cap and, for some, the reaction speed -- about 250 configurations."""
+    v: list[Variant] = []
+
+    def add(family, make, caps=(5,), steps=(1.0,)):
+        for cap in caps:
+            for step in steps:
+
+                def build(p, make=make, cap=cap):
+                    strategy = make(p, cap)
+                    if cap != 5 and "cap" not in strategy.name:
+                        strategy.name += f" cap {cap}"
+                    return strategy
+
+                v.append(Variant(family, build, step))
+
+    caps = (2, 5, 10)
+    for g in (0.02, 0.05, 0.1, 0.2, 0.5):
+        for t in (3, 10, 30, 60):
+            for a in (0.0, 1.0):
+                add("A-S", lambda p, m, g=g, t=t, a=a: AvellanedaStoikov(p, g, t, a, m), caps)
+        add("GLFT", lambda p, m, g=g: GLFT(p, g, m), caps)
+    for k in (0, 1, 2, 3, 5, 10):
+        add("offset", lambda p, m, k=k: Offset(p, k, m), caps)
+        add("offset", lambda p, m, k=k: Offset(p, k, m), steps=(0.1, 5.0))
+    add("penny", lambda p, m: Penny(p, m), caps)
+    for n in (1, 2, 3, 5):
+        add("sticky", lambda p, m, n=n: Sticky(p, n, m), caps)
+    for s in (0.25, 0.5, 1, 2, 4):
+        add("skew", lambda p, m, s=s: Skew(p, s, m), (5, 10))
+    for c in (0.2, 0.3, 0.4, 0.6, 0.8):
+        add("imbalance", lambda p, m, c=c: Imbalance(p, c, m), steps=(0.1, 1.0, 5.0))
+    for w in (0.5, 1, 2, 5, 10):
+        add("trade filter", lambda p, m, w=w: TradeFilter(p, w, m), steps=(0.1, 1.0))
+    for x in (0.5, 1, 2, 3):
+        add("vol filter", lambda p, m, x=x: VolFilter(p, x, m), (5, 10))
+    for q in (0.25, 0.5, 0.75):
+        add("short queue", lambda p, m, q=q: ShortQueue(p, q, m), caps)
+        add("survival", lambda p, m, q=q: Survival(p, q, m), caps)
+    for n in (2, 3, 5, 8):
+        add("ladder", lambda p, m, n=n: Ladder(p, n, m), (5, 10))
+    return v
+
+
 VARIANTS = _variants()
+GRID = _grid()
 # the four strategies of the first experiment, kept for comparison
 BASELINE = ("symmetric", "short queue 0.5", "A-S γ0.1 τ10", "GLFT γ0.1")
-__all__ = ["BASELINE", "VARIANTS", "Params", "Strategy", "Variant"]
+__all__ = ["BASELINE", "GRID", "VARIANTS", "Params", "Strategy", "Variant"]

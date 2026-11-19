@@ -17,11 +17,13 @@ more than 94\% of the volume queued ahead of an order leaves by cancellation, no
 by trading. A queue-aware rule reproduces the observed fill rate to within 5\%,
 and its residual error is entirely due to the exchange processing cancellations
 before aggressors within a block; with that rule added it matches the observed
-fill rate exactly. Such in-block cancellations rescue 2--4\% of orders that a
-trade would otherwise have filled, and the rescued fills would have been worse
-than real ones at short horizons. Backtesting four quoting strategies under each
-fill rule, the same strategy's PnL changes by up to \tbd{} and the ranking of
-strategies agrees across fill rules with Kendall $\tau$ = \tbd.
+fill rate to within 0.3\%. Such in-block cancellations rescue 3--4\% of orders that a
+trade would otherwise have filled. The candle rule of bar-based backtests
+overstates fills 2.4--8.8 times even for orders that rest longer than a bar. Backtesting 48 quoting strategies under each
+fill rule, all but one lose money under the validated rule on every instrument;
+the touch rule flatters 75--92\% of them, and the clock turns 83--90\% of the
+losses into profits and ranks the strategies in an order unrelated to the true
+one.
 
 \medskip
 \noindent\textbf{Keywords:} market making; backtesting; fill probability; queue

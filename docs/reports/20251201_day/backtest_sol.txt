@@ -104,16 +104,16 @@ SOL: 48 strategies under five fill rules, 20251201, hours 0-23
     short queue 0.75          queue-aware           16,881   -2711.00         -1.606            -1.463             -1.50
     short queue 0.75          queue-aware, block    15,414   -2470.85         -1.603            -1.473             -1.45
     short queue 0.75          clock                 30,484      -3.40         -0.001             0.162             -0.01
-    survival 0.5              touch                 31,371   -1903.50         -0.607            -0.462             -1.46
-    survival 0.5              volume-through        12,346   -2357.41         -1.909            -1.860             -1.21
-    survival 0.5              queue-aware           16,691   -2800.88         -1.678            -1.489             -1.48
-    survival 0.5              queue-aware, block    15,238   -2556.41         -1.678            -1.501             -1.46
-    survival 0.5              clock                 28,910      -0.36         -0.000             0.188             -0.00
-    survival 0.75             touch                 24,608   -2073.34         -0.843            -0.652             -1.42
-    survival 0.75             volume-through        11,240   -2193.07         -1.951            -1.857             -1.23
-    survival 0.75             queue-aware           14,879   -2540.67         -1.708            -1.531             -1.43
-    survival 0.75             queue-aware, block    13,572   -2336.72         -1.722            -1.564             -1.43
-    survival 0.75             clock                 20,423    -290.12         -0.142             0.023             -0.34
+    survival 0.5              touch                 32,065   -1853.91         -0.578            -0.443             -1.44
+    survival 0.5              volume-through        12,434   -2351.97         -1.892            -1.853             -1.23
+    survival 0.5              queue-aware           16,893   -2777.78         -1.644            -1.479             -1.48
+    survival 0.5              queue-aware, block    15,463   -2521.65         -1.631            -1.490             -1.46
+    survival 0.5              clock                 29,971     184.65          0.062             0.193              0.22
+    survival 0.75             touch                 25,907   -2109.78         -0.814            -0.626             -1.41
+    survival 0.75             volume-through        11,542   -2196.40         -1.903            -1.862             -1.25
+    survival 0.75             queue-aware           15,301   -2578.80         -1.685            -1.526             -1.48
+    survival 0.75             queue-aware, block    13,992   -2348.89         -1.679            -1.553             -1.47
+    survival 0.75             clock                 21,885    -445.37         -0.204             0.011             -0.71
     ladder 3                  touch                 52,869   -3414.20         -0.646            -0.560             -0.93
     ladder 3                  volume-through        20,758   -4221.78         -2.034            -1.996             -0.97
     ladder 3                  queue-aware           30,486   -4878.39         -1.600            -1.428             -1.10
@@ -250,11 +250,11 @@ SOL: does the fill rule change which strategy looks best?
 ==============================================================================
     all variants: 48 strategies
     rule                  Kendall tau  Spearman rho   sign differs   flattered   top 5 kept   best strategy
-    touch                        0.59          0.77             6%         92%          4 / 5   imbalance 0.3 @0.1s
+    touch                        0.60          0.77             6%         92%          4 / 5   imbalance 0.3 @0.1s
     volume-through               0.91          0.97             0%         75%          5 / 5   imbalance 0.3 @0.1s
     queue-aware                  0.97          1.00             0%          0%          4 / 5   imbalance 0.3 @0.1s
     queue-aware, block           1.00          1.00             0%          0%          5 / 5   imbalance 0.3 @0.1s
-    clock                       -0.20         -0.25            88%        100%          3 / 5   ladder 5
+    clock                       -0.21         -0.26            90%        100%          3 / 5   ladder 5
 
     the four of the first experiment: 4 strategies
     rule                  Kendall tau  Spearman rho   sign differs   flattered   top 3 kept   best strategy

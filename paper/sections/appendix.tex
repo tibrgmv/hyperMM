@@ -79,6 +79,83 @@ Book states rebuilt & 1\,115\,559 & 3\,531\,915 \\
 \end{tabular}
 \end{table}
 
+\section{Fill-time model details}
+\label{app:survival}
+
+\paragraph{Features.}
+Only what was known just before the order arrived: the book one change earlier
+and trades strictly before placement. Side; order size and volume ahead; whether
+the level was empty; distance behind the best price on the order's side and from
+the mid-price, in ticks; spread; queue imbalance at the best prices
+\citep{gould2016queue}, signed towards the order's side; trade blocks that hit the
+order's side in the last 1 and 10~seconds; and the mid-price move towards the
+order over the same windows. Sizes, distances, counts and moves enter on a
+logarithmic scale, $\operatorname{sign}(x)\ln(1+|x|)$: distances reach thousands
+of ticks, and a model linear in them is ruled by a few far-away orders.
+
+\paragraph{Stages.}
+By~\eqref{eq:factor} a fill has two stages, each a time-to-event outcome censored
+by cancellation: from placement to the front of the queue, and from the front to
+the first fill. Table~\ref{tab:survival} scores a Cox model per stage by Harrell's
+concordance.
+
+\begin{table}[t]
+\centering\small
+\caption{Concordance on held-out hours (12--23) of a Cox model fitted on hours
+0--10, and of single features: the volume ahead, and the distance from the mid,
+which is the exponential clock's ranking.}
+\label{tab:survival}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}ll ccc@{}}
+\toprule
+ & Stage & Cox & Volume ahead & Clock ($\delta$) \\
+\midrule
+\inputrows{tables/survival_rows.tex}
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering\small
+\caption{Hazard ratios of the Cox model for the total time to fill, fitted on
+hours 0--10, per unit of each feature on its logarithmic scale (one unit is a
+factor of $e\approx2.7$ in the underlying quantity). A ratio above one shortens
+the expected time to fill.}
+\label{tab:hazard}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}l ccc@{}}
+\toprule
+Feature & \BTC & \ETH & \SOL \\
+\midrule
+\inputrows{tables/hazard_rows.tex}
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{What shortens the wait.}
+A unit of log volume ahead---a factor of 2.7 in the queue---lowers the fill hazard
+by about 20\% on all three instruments, and joining an empty level raises it by a
+factor of 1.5 (\SOL), 1.9 (\BTC) and 2.5 (\ETH) (Table~\ref{tab:hazard}). The
+same factor in the distance behind the best price, or from the mid, lowers the
+hazard by 18--30\%. Larger orders wait longer. Recent trading on the order's side
+raises the hazard by 15--25\% per log unit of trade blocks in the last second and
+by 37--51\% in the last ten, and a wider spread raises it. Imbalance towards the
+order's own side lowers it, consistent with queue imbalance predicting the next
+move away from the heavier side \citep{gould2016queue}. Side and the recent
+mid-price move matter little.
+
+\paragraph{The two stages.}
+The factors of \eqref{eq:factor} have different drivers. Reaching the front is a
+matter of the queue: the volume ahead alone ranks it with $C=0.81$--$0.85$, while
+the distance from the mid is uninformative or misleading (0.38--0.54). Once an
+order leads its level the distance takes over (0.61--0.81), and the volume that
+was ahead at placement ranks the remaining wait \emph{backwards}
+($C=0.35$--$0.46$): orders that waited behind long queues are filled sooner once
+they lead. A plausible reading is that a long queue is consumed mostly when the
+price is moving to the level, so an order that reaches the front of one meets an
+aggressor almost at once. A single intensity per distance, as in the exponential
+clock, cannot represent either stage.
+
 \section{Backtest by strategy}
 \label{app:variants}
 

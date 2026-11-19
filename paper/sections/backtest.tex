@@ -1,4 +1,4 @@
-\section{What the fill assumption does to a backtest}
+\section{Step three: what the error does to a backtest}
 \label{sec:backtest}
 
 The previous sections measured each fill rule on real orders. Here we ask the
@@ -119,64 +119,74 @@ strategy.}
 
 \paragraph{Under the reference rule almost every strategy loses.}
 Under \qa{} with the block rule, 47 of the 48 variants lose money before fees on
-\ETH{} and 47 on \SOL{} (\BTC: \tbd). The only exceptions are a trade filter that
-stands aside for five seconds after every trade on its side (\$48 on \ETH) and the
-imbalance quoter deciding ten times a second (\$251 on \SOL); both trade little.
-The four strategies of the original design lose on both instruments, and their
-fills lose 1.25--1.64\bps{} one second later: a passive quote that reacts once a
-second is filled mostly when the price is about to move through it. Fees would
-deepen every loss.
+each of the three instruments. The exceptions are the imbalance quoter deciding
+ten times a second (\$109 on \BTC, \$251 on \SOL) and a trade filter that stands
+aside for five seconds after every trade on its side (\$48 on \ETH); both trade
+little. The fills of the four classical strategies---symmetric, short-queue, A--S
+and GLFT at their base parameters---lose 0.6--0.9\bps{} one second later on \BTC{}
+and 1.3--1.6\bps{} on \ETH{} and \SOL: a passive quote that reacts once a second
+is filled mostly when the price is about to move through it. Fees would deepen
+every loss.
 
 \paragraph{\touch{} hides adverse selection.}
-Under \touch{} the four original strategies fill 1.5 to 3 times as often as under
-the reference (symmetric quoting: 40\,815 fills against 17\,110 on \SOL{} and
-68\,166 against 23\,033 on \ETH), and their fills look far less toxic: one-second
-markouts of $-0.15$ to $-1.17$\bps{} against $-1.25$ to $-1.64$. The extra fills are
-the orders that in reality wait behind the queue and are reached only when the
-price runs through the level. Across all 48 variants \touch{} flatters 92\% on
-\SOL{} and 75\% on \ETH{} (Table~\ref{tab:ranking}, Figure~\ref{fig:pnl}), and
-ranks them only loosely as the reference does ($\tau=0.59$ and $0.74$); on \ETH{}
-only two of the reference's five best variants remain among its five best. The
-most striking case is the imbalance quoter deciding ten times a second: under the
-reference it fills 2\,842 times on \ETH{} and loses \$6; under \touch{} it fills
-41\,528 times and makes \$3\,268, the best result of any variant.
+Under \touch{} the four classical strategies fill 1.4 to 3.1 times as often as
+under the reference (symmetric quoting on \BTC: 99\,161 fills against 32\,279),
+and their fills look far less toxic: one-second markouts of $-0.1$ to $-1.2$\bps{}
+against $-0.6$ to $-1.6$. The extra fills are the orders that in reality wait
+behind the queue and are reached only when the price runs through the level.
+Across the 48 variants \touch{} flatters 77\% on \BTC, 75\% on \ETH{} and 92\% on
+\SOL{} (Table~\ref{tab:ranking}, Figure~\ref{fig:pnl}) and ranks them only loosely
+as the reference does ($\tau=0.71$, $0.73$ and $0.60$); on \BTC{} and \ETH{} only
+two of the reference's five best variants remain among its five best. The most
+striking case is the imbalance quoter deciding ten times a second, the best
+variant under \touch{} on all three instruments: on \BTC{} it fills 5\,812 times and
+makes \$109 under the reference, and fills 73\,870 times and makes \$4\,232 under
+\touch.
 
 \paragraph{\clock{} reverses the sign.}
 Under the exponential clock fills arrive independently of the price path, so they
-carry no adverse selection. It flatters every one of the 48 variants on both
-instruments and turns 88\% of them from a loss into a profit; its ranking is
-unrelated to the reference ($\tau=-0.20$ on \SOL, $-0.08$ on \ETH). The best
-strategy under the clock is the five-level ladder, the \emph{worst} under the
-reference: $-\$8\,230$ becomes $+\$10\,551$ on \ETH{} and $-\$4\,806$ becomes
-$+\$6\,642$ on \SOL. The more orders a strategy rests, the more random fills the
-clock grants it. The clock does not misprice adverse selection; it removes it.
+carry no adverse selection. The clock flatters 98--100\% of the variants and turns
+83--90\% of them from a loss into a profit; its ranking is unrelated to the
+reference ($\tau=-0.09$, $-0.08$ and $-0.21$). The best strategy under the clock on
+every instrument is the five-level ladder, the \emph{worst} under the reference:
+$-\$9\,388$ becomes $+\$6\,765$ on \BTC, $-\$8\,230$ becomes $+\$10\,551$ on \ETH{}
+and $-\$4\,806$ becomes $+\$6\,642$ on \SOL. The more orders a strategy rests, the
+more random fills the clock grants it. The clock does not misprice adverse
+selection; it removes it.
 
 \paragraph{\vt{} and the block rule.}
-\vt{} ranks the variants almost as the reference does ($\tau=0.91$ and $0.96$,
-all five best kept): it waits for more volume than in reality has to trade, but
-the fills it grants are as toxic as the real ones. Its level differs by
-instrument---it flatters 75\% of variants on \SOL{} but 6\% on \ETH. Removing the
-block rule from \qa{} flatters none of the 48 variants: the fills that an in-block
-cancellation prevents are, as in Section~\ref{sec:block}, the toxic ones, so
-ignoring the exchange's processing order never makes a strategy look better.
+\vt{} ranks the variants almost as the reference does ($\tau=0.91$--$0.97$, all
+five best kept): it waits for more volume than in reality has to trade, but the
+fills it grants are as toxic as the real ones. Its level differs by instrument:
+it flatters 75\% of variants on \SOL{} but 12\% on \BTC{} and 6\% on \ETH. Removing
+the block rule from \qa{} adds a median 8--14\% of fills and flatters a single
+variant on \BTC{} and none on \ETH{} and \SOL: the fills that an in-block
+cancellation prevents are losing ones for these strategies, so
+ignoring the exchange's processing order almost never makes a strategy look
+better.
 
 \paragraph{Which strategies the rules favour.}
 The rules' errors are not spread evenly. \touch{} favours most the strategies that
 join the best price whatever its queue---imbalance, penny, sticky, symmetric and
-skew quoters gain a median \$0.9--2.2k over the day---and favours least those
+skew quoters gain a median \$0.9--2.8k over the day---and favours least those
 that stay away from long queues or quote deeper: offset, short-queue, A--S and
 GLFT quoters gain $-\$0.6$k to $+\$0.2$k. The clock favours most the strategies
-that rest the most orders: ladders gain a median \$11--16k. A backtest under
-either rule therefore does not merely shift all strategies by a common amount; it
-selects for a particular style of quoting.
+that rest the most orders: ladders gain a median \$11--16k, no other family more
+than \$5.3k. A backtest under either rule therefore does not merely shift all
+strategies by a common amount; it selects for a particular style of quoting.
 
 \paragraph{Reaction speed.}
 Under the reference rule, deciding faster helps the strategies that withdraw
-quotes when the market turns: from five seconds to a tenth of a second the A--S
-quoter's loss on \SOL{} falls from \$1\,136 to \$437, and the imbalance quoter
-turns profitable on \SOL{} and breaks even on \ETH. It hurts the symmetric quoter, which only chases the best price
-and so collects more fills of the same quality ($-\$2\,000$ to $-\$2\,891$). Under
-the clock every strategy gains from speed, because more orders mean more random
-fills. On \BTC: \tbd.
+quotes when the market turns. From five seconds to a tenth of a second the A--S
+quoter's loss falls from \$326 to \$56 on \BTC, from \$836 to \$307 on \ETH{} and
+from \$1\,136 to \$437 on \SOL, and the imbalance quoter goes from a loss of
+\$0.5--1.0k to a profit on \BTC{} and \SOL{} and to break-even on \ETH. Speed hurts
+the symmetric quoter, which only chases the best price and so collects more fills
+of the same quality (on \BTC, $-\$2\,163$ to $-\$5\,274$). Under the clock none of
+the five strategies loses from deciding faster, because more orders mean more
+random fills.
 
-\paragraph{Sharpe ratio.} \tbd
+\paragraph{Sharpe ratio.}
+The Sharpe ratio of hourly PnL, not annualised, tells the same story. Its median
+over the 48 variants is $-1.3$ to $-1.8$ under the reference, $-1.1$ to $-1.6$
+under \touch, and $+1.3$ to $+1.9$ under the clock.

@@ -1,0 +1,66 @@
+
+==============================================================================
+SOL: who meets the aggressor, and who gets away
+==============================================================================
+    encounters 130,947 by 1,712 makers; rescued 5,285 (4.04%)
+    top  1 makers by encounters hold 16.37% of encounters; top  1 by rescues hold 6.77% of rescues
+    top  5 makers by encounters hold 31.14% of encounters; top  5 by rescues hold 24.60% of rescues
+    top 10 makers by encounters hold 44.34% of encounters; top 10 by rescues hold 40.70% of rescues
+    makers never rescued: 1,575 of 1,712, with 10.70% of encounters
+    the 10 makers with most encounters:
+    maker        encounters    rescued    rate
+    0xbf19..2a1c     21,435        358   1.67%
+    0xecb6..2b00      5,552        198   3.57%
+    0xa775..5277      5,180        165   3.19%
+    0xe3b3..c14f      4,449        161   3.62%
+    0xf060..6a6f      4,159        186   4.47%
+    0x37c1..7851      3,985        135   3.39%
+    0x170a..c3c6      3,702        172   4.65%
+    0xac74..0127      3,329        280   8.41%
+    0x1a0b..c31c      3,210        278   8.66%
+    0xb4d6..ae7a      3,058        186   6.08%
+    rescue rate among the 83 makers with at least 200 encounters: min 0.00%, quartiles 1.84% / 4.67% / 6.26%, max 9.66%
+
+==============================================================================
+ETH: who meets the aggressor, and who gets away
+==============================================================================
+    encounters 243,874 by 2,330 makers; rescued 8,442 (3.46%)
+    top  1 makers by encounters hold 12.69% of encounters; top  1 by rescues hold 6.11% of rescues
+    top  5 makers by encounters hold 26.53% of encounters; top  5 by rescues hold 19.57% of rescues
+    top 10 makers by encounters hold 36.72% of encounters; top 10 by rescues hold 29.96% of rescues
+    makers never rescued: 2,049 of 2,330, with 8.77% of encounters
+    the 10 makers with most encounters:
+    maker        encounters    rescued    rate
+    0xbf19..2a1c     30,946        292   0.94%
+    0x31de..13f2     15,891        157   0.99%
+    0x4129..8b95      5,983        374   6.25%
+    0x1423..c719      5,971        516   8.64%
+    0x7936..0706      5,912        171   2.89%
+    0x55f3..d788      5,848         71   1.21%
+    0xaca2..3915      5,002        168   3.36%
+    0xf053..b99d      4,889        187   3.82%
+    0xecb6..2b00      4,803        181   3.77%
+    0x162c..8185      4,312        130   3.01%
+    rescue rate among the 142 makers with at least 200 encounters: min 0.00%, quartiles 1.66% / 3.70% / 6.07%, max 16.91%
+
+==============================================================================
+BTC: who meets the aggressor, and who gets away
+==============================================================================
+    encounters 591,775 by 4,018 makers; rescued 16,174 (2.73%)
+    top  1 makers by encounters hold 35.44% of encounters; top  1 by rescues hold 3.17% of rescues
+    top  5 makers by encounters hold 43.96% of encounters; top  5 by rescues hold 14.72% of rescues
+    top 10 makers by encounters hold 50.00% of encounters; top 10 by rescues hold 26.96% of rescues
+    makers never rescued: 3,673 of 4,018, with 6.30% of encounters
+    the 10 makers with most encounters:
+    maker        encounters    rescued    rate
+    0xf048..5444    209,698        430   0.21%
+    0x6e8b..ea79     18,282        512   2.80%
+    0xecb6..2b00     11,760        406   3.45%
+    0x023a..2355     10,960        389   3.55%
+    0x6c65..403b      9,424        177   1.88%
+    0x7700..4216      8,060        224   2.78%
+    0xaf2a..0447      8,041        490   6.09%
+    0x1355..5a42      6,916        470   6.80%
+    0x1a75..7d8c      6,581          2   0.03%
+    0xc6ac..8e84      6,190        336   5.43%
+    rescue rate among the 192 makers with at least 200 encounters: min 0.00%, quartiles 0.33% / 3.64% / 5.71%, max 13.88%

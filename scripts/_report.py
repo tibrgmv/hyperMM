@@ -19,8 +19,31 @@ def arguments(doc: str) -> argparse.Namespace:
     parser.add_argument("--raw", type=Path, default=config.DATA_RAW_DIR)
     parser.add_argument("--date", default="20251201")
     parser.add_argument("--hour", type=int, default=12)
+    parser.add_argument(
+        "--hours",
+        type=hour_list,
+        default=None,
+        help="several hours, e.g. 0-23 or 10,12-14 (reports that pool hours)",
+    )
     parser.add_argument("--coins", nargs="+", default=list(COINS_WITH_STATUSES))
-    return parser.parse_args()
+    parser.add_argument(
+        "--chained",
+        action="store_true",
+        help="rebuild each hour between its neighbours (reports that support it)",
+    )
+    args = parser.parse_args()
+    if args.hours is None:
+        args.hours = [args.hour]
+    return args
+
+
+def hour_list(text: str) -> list[int]:
+    """Parse "0-23" or "10,12-14" into a list of hours."""
+    out: list[int] = []
+    for part in text.split(","):
+        first, _, last = part.partition("-")
+        out.extend(range(int(first), int(last or first) + 1))
+    return out
 
 
 def section(title: str) -> None:
@@ -29,4 +52,3 @@ def section(title: str) -> None:
 
 def share(part: float, whole: float) -> str:
     return f"{100 * part / whole:.2f}%" if whole else "—"
-

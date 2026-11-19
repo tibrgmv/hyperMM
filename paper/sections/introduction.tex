@@ -1,0 +1,69 @@
+\section{Introduction}
+\label{sec:intro}
+
+A market maker earns the spread by resting limit orders on both sides of the
+book. Whether a given order earns anything depends on a single event: whether an
+aggressor reaches it before its owner withdraws it. In a backtest that event can
+never be observed, because the order being tested was never in the market. The
+simulator must therefore decide, by some rule, whether the order \emph{would}
+have been filled. Candle-based platforms fill a limit order once the bar's
+extreme touches its price; event-driven simulators wait until enough volume has
+traded at the price; stochastic-control models of market making replace the
+question with a fill intensity that decays with the distance from the mid-price.
+
+These rules are not innocuous approximations. They determine the fill rate,
+hence the inventory path, the realised spread, the adverse selection a strategy
+suffers and, ultimately, which of two strategies looks better. Yet they are
+almost never validated, for the simple reason that the data needed to validate
+them---the outcome of each individual resting order together with the exact
+queue in front of it---has not been publicly available.
+
+The order-level dataset of \citet{albers2026openbook} changes this. Hyperliquid,
+a perpetual-futures exchange whose central limit order book runs on its own
+blockchain, publishes every order of every participant together with its fate.
+The dataset therefore contains, for millions of real passive orders, exactly the
+quantity a backtest has to guess: whether the order was filled, and when. This
+lets us ask, and answer, a question that has so far been inaccessible:
+\emph{how much does the unobservable fill assumption change the conclusions of a
+market-making backtest?}
+
+\paragraph{Contributions.}
+\begin{enumerate}
+  \item \textbf{Ground truth for fill rules.} From the three streams of the
+  dataset we rebuild, for every real passive order, its queue position, the
+  moment it reaches the front, and its true outcome
+  (Sections~\ref{sec:reconstruction}--\ref{sec:outcomes}).
+  \item \textbf{Fill models confronted with real outcomes.} We apply four fill
+  rules to real orders, for which the true outcome is known, and measure each
+  rule's error separately from any strategy (Section~\ref{sec:fillmodels}). The
+  two standard rules err in opposite directions by a factor of two to six, for
+  one shared reason.
+  \item \textbf{Fill time as a survival problem.} Using the factorisation of
+  the fill probability into reaching the front of the queue and meeting an
+  aggressor there, we model the time to fill from features known at placement.
+  On hours it never saw, the model ranks fill times with a concordance of
+  0.81--0.86, against 0.77--0.78 for the exponential-intensity clock, the only one of the four rules that, like it, uses
+  nothing beyond the moment of placement (Section~\ref{sec:survival}).
+  \item \textbf{The value of in-block cancellation priority.} We measure how
+  often a cancellation processed in the same block as an aggressor rescues an
+  order from being filled, show that this is the only systematic error of a
+  queue-aware rule, and estimate what the rescued fills would have been worth
+  (Section~\ref{sec:block}).
+  \item \textbf{What the fill assumption does to a backtest.} We backtest
+  Avellaneda--Stoikov, GLFT, symmetric and queue-aware quoting strategies under
+  each fill rule. Changing only the fill rule changes the same strategy's PnL by
+  up to \tbd{} and its Sharpe ratio by up to \tbd, and the ranking of strategies
+  agrees across rules with a Kendall $\tau$ of \tbd{}
+  (Section~\ref{sec:backtest}).
+  \item \textbf{A second substitution.} We show that candle-based backtests also
+  fabricate the execution price of aggressive orders, and that the resulting
+  gift per round trip is bounded below by the full spread
+  (Section~\ref{sec:price}).
+\end{enumerate}
+All results hold across \tbd{} hours of December 2025, three instruments
+(\BTC, \ETH, \SOL) and calm and volatile regimes.
+
+\paragraph{Reproducibility.}
+Every number in this paper is printed by a script in the accompanying
+repository and its reference output is stored alongside the code
+(Appendix~\ref{app:repro}).

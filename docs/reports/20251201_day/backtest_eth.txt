@@ -1,0 +1,266 @@
+
+==============================================================================
+ETH: 48 strategies under five fill rules, 20251201, hours 0-23
+==============================================================================
+    calibrated on their own hour (no hour before): [0]
+    strategy                  rule                  fills      PnL $   per fill, bp   markout 1 s, bp    Sharpe, hourly
+    symmetric                 touch                 68,166   -2019.27         -0.296            -0.155             -1.08
+    symmetric                 volume-through        18,873   -3773.09         -1.999            -1.677             -1.42
+    symmetric                 queue-aware           25,536   -4056.36         -1.588            -1.258             -1.49
+    symmetric                 queue-aware, block    23,033   -3607.08         -1.566            -1.251             -1.39
+    symmetric                 clock                 63,356    1184.12          0.187             0.207              1.78
+    offset 1                  touch                 16,297   -3272.71         -2.008            -1.645             -1.27
+    offset 1                  volume-through        14,121   -3106.34         -2.200            -1.894             -1.25
+    offset 1                  queue-aware           15,409   -3205.67         -2.080            -1.759             -1.27
+    offset 1                  queue-aware, block    12,172   -2531.42         -2.080            -1.963             -1.21
+    offset 1                  clock                 43,029    2214.77          0.515             0.568              3.26
+    offset 2                  touch                 13,755   -2621.38         -1.906            -1.594             -1.13
+    offset 2                  volume-through        11,287   -2409.66         -2.135            -1.912             -1.01
+    offset 2                  queue-aware           12,748   -2553.44         -2.003            -1.737             -1.08
+    offset 2                  queue-aware, block    10,133   -2033.54         -2.007            -1.931             -1.02
+    offset 2                  clock                 29,156    2791.67          0.957             0.937              2.34
+    offset 5                  touch                  6,482   -1079.72         -1.666            -1.788             -0.61
+    offset 5                  volume-through         5,365   -1008.24         -1.879            -2.126             -0.60
+    offset 5                  queue-aware            5,979   -1061.57         -1.775            -1.948             -0.59
+    offset 5                  queue-aware, block     5,021    -878.53         -1.750            -2.056             -0.55
+    offset 5                  clock                  9,081    2078.69          2.289             2.014              1.32
+    penny                     touch                 68,611   -2109.62         -0.307            -0.171             -1.12
+    penny                     volume-through        21,529   -3755.72         -1.744            -1.403             -1.40
+    penny                     queue-aware           27,716   -4069.46         -1.468            -1.118             -1.45
+    penny                     queue-aware, block    25,308   -3636.03         -1.437            -1.101             -1.35
+    penny                     clock                 64,776    1355.44          0.209             0.179              2.36
+    sticky 1                  touch                 67,874   -2027.98         -0.299            -0.161             -1.09
+    sticky 1                  volume-through        19,020   -3835.25         -2.016            -1.692             -1.43
+    sticky 1                  queue-aware           25,520   -4103.11         -1.608            -1.275             -1.49
+    sticky 1                  queue-aware, block    23,429   -3725.99         -1.590            -1.272             -1.43
+    sticky 1                  clock                 64,421    1094.39          0.170             0.188              2.07
+    sticky 2                  touch                 63,425   -2219.50         -0.350            -0.191             -1.15
+    sticky 2                  volume-through        18,800   -3768.37         -2.004            -1.695             -1.43
+    sticky 2                  queue-aware           24,916   -4022.24         -1.614            -1.288             -1.48
+    sticky 2                  queue-aware, block    22,883   -3656.87         -1.598            -1.283             -1.43
+    sticky 2                  clock                 64,283    1324.66          0.206             0.202              1.95
+    sticky 3                  touch                 58,457   -2300.77         -0.394            -0.222             -1.16
+    sticky 3                  volume-through        18,405   -3665.16         -1.991            -1.698             -1.38
+    sticky 3                  queue-aware           24,209   -3922.45         -1.620            -1.290             -1.43
+    sticky 3                  queue-aware, block    22,295   -3567.95         -1.600            -1.286             -1.39
+    sticky 3                  clock                 63,997    1294.62          0.202             0.224              2.31
+    skew 0.5                  touch                 65,312   -2345.59         -0.359            -0.256             -1.15
+    skew 0.5                  volume-through        20,069   -3775.08         -1.881            -1.581             -1.35
+    skew 0.5                  queue-aware           25,567   -4083.25         -1.597            -1.282             -1.41
+    skew 0.5                  queue-aware, block    22,930   -3683.12         -1.606            -1.295             -1.34
+    skew 0.5                  clock                 61,251    1615.48          0.264             0.268              2.36
+    skew 1                    touch                 59,055   -2366.49         -0.401            -0.309             -1.12
+    skew 1                    volume-through        19,507   -3581.54         -1.836            -1.554             -1.30
+    skew 1                    queue-aware           24,224   -3862.91         -1.595            -1.300             -1.35
+    skew 1                    queue-aware, block    21,508   -3477.44         -1.617            -1.327             -1.27
+    skew 1                    clock                 58,082    1789.74          0.308             0.302              3.16
+    skew 2                    touch                 58,281   -1998.37         -0.343            -0.269             -1.07
+    skew 2                    volume-through        18,331   -3310.60         -1.806            -1.551             -1.24
+    skew 2                    queue-aware           22,881   -3515.18         -1.536            -1.274             -1.30
+    skew 2                    queue-aware, block    20,544   -3194.49         -1.555            -1.286             -1.24
+    skew 2                    clock                 54,636    1814.31          0.332             0.329              2.63
+    imbalance 0.3             touch                 29,850    1714.53          0.574             0.377              1.58
+    imbalance 0.3             volume-through         3,006    -653.77         -2.175            -1.828             -0.61
+    imbalance 0.3             queue-aware            4,913    -749.49         -1.526            -1.190             -0.74
+    imbalance 0.3             queue-aware, block     3,617    -431.48         -1.193            -1.139             -0.55
+    imbalance 0.3             clock                 30,895    2841.38          0.920             0.660              1.87
+    imbalance 0.6             touch                 35,603    1608.33          0.452             0.304              1.56
+    imbalance 0.6             volume-through         3,997    -796.01         -1.992            -1.813             -0.70
+    imbalance 0.6             queue-aware            6,605    -947.48         -1.434            -1.147             -0.90
+    imbalance 0.6             queue-aware, block     4,997    -580.31         -1.161            -1.097             -0.75
+    imbalance 0.6             clock                 36,823    2915.00          0.792             0.568              2.45
+    trade filter 1s           touch                 32,281    -547.34         -0.170            -0.098             -0.66
+    trade filter 1s           volume-through         7,367   -1335.97         -1.813            -1.573             -1.21
+    trade filter 1s           queue-aware            9,571   -1442.03         -1.507            -1.260             -1.56
+    trade filter 1s           queue-aware, block     7,575   -1112.31         -1.468            -1.316             -1.28
+    trade filter 1s           clock                 28,983     943.16          0.325             0.232              1.21
+    trade filter 5s           touch                  2,429     319.09          1.314            -0.123              0.46
+    trade filter 5s           volume-through           596       5.31          0.089            -1.455              0.01
+    trade filter 5s           queue-aware              761      35.84          0.471            -1.130              0.05
+    trade filter 5s           queue-aware, block       625      48.11          0.770            -1.126              0.07
+    trade filter 5s           clock                  2,067     626.80          3.032             0.259              0.52
+    vol filter 1              touch                 39,131   -1142.66         -0.292            -0.079             -0.79
+    vol filter 1              volume-through         8,183   -1801.61         -2.202            -1.665             -1.62
+    vol filter 1              queue-aware           11,346   -2043.77         -1.801            -1.247             -1.55
+    vol filter 1              queue-aware, block     9,774   -1717.57         -1.757            -1.255             -1.32
+    vol filter 1              clock                 39,759     892.26          0.224             0.178              2.10
+    vol filter 2              touch                 45,913   -1332.93         -0.290            -0.106             -0.91
+    vol filter 2              volume-through        10,662   -2183.70         -2.048            -1.622             -1.84
+    vol filter 2              queue-aware           14,569   -2468.60         -1.694            -1.239             -1.81
+    vol filter 2              queue-aware, block    12,759   -2072.85         -1.625            -1.241             -1.79
+    vol filter 2              clock                 45,447     581.53          0.128             0.189              0.80
+    short queue 0.25          touch                 20,518   -2897.99         -1.412            -0.847             -1.85
+    short queue 0.25          volume-through        12,024   -2537.70         -2.111            -1.635             -1.61
+    short queue 0.25          queue-aware           14,079   -2689.38         -1.910            -1.417             -1.66
+    short queue 0.25          queue-aware, block    12,360   -2464.83         -1.994            -1.534             -1.53
+    short queue 0.25          clock                 12,752   -1273.07         -0.998            -0.536             -1.29
+    short queue 0.5           touch                 35,762   -3359.82         -0.939            -0.564             -1.62
+    short queue 0.5           volume-through        15,712   -3198.04         -2.035            -1.662             -1.49
+    short queue 0.5           queue-aware           19,290   -3361.15         -1.742            -1.363             -1.54
+    short queue 0.5           queue-aware, block    17,037   -3064.07         -1.798            -1.431             -1.42
+    short queue 0.5           clock                 25,958   -1461.84         -0.563            -0.241             -1.04
+    short queue 0.75          touch                 52,497   -3204.66         -0.610            -0.351             -1.46
+    short queue 0.75          volume-through        17,854   -3539.85         -1.983            -1.674             -1.44
+    short queue 0.75          queue-aware           23,149   -3741.77         -1.616            -1.305             -1.54
+    short queue 0.75          queue-aware, block    20,648   -3373.66         -1.634            -1.329             -1.41
+    short queue 0.75          clock                 42,689    -785.38         -0.184            -0.038             -0.74
+    survival 0.5              touch                 49,181   -2966.38         -0.603            -0.349             -1.46
+    survival 0.5              volume-through        17,306   -3489.09         -2.016            -1.680             -1.38
+    survival 0.5              queue-aware           22,121   -3705.62         -1.675            -1.327             -1.42
+    survival 0.5              queue-aware, block    19,602   -3368.44         -1.718            -1.363             -1.30
+    survival 0.5              clock                 38,331    -714.27         -0.186            -0.010             -0.67
+    survival 0.75             touch                 36,515   -3161.96         -0.866            -0.514             -1.59
+    survival 0.75             volume-through        15,684   -3237.16         -2.064            -1.681             -1.40
+    survival 0.75             queue-aware           19,250   -3389.32         -1.761            -1.383             -1.45
+    survival 0.75             queue-aware, block    17,026   -3076.96         -1.807            -1.441             -1.36
+    survival 0.75             clock                 26,008   -1109.96         -0.427            -0.193             -0.88
+    ladder 3                  touch                 89,126   -5992.91         -0.672            -0.511             -1.16
+    ladder 3                  volume-through        35,067   -7414.38         -2.114            -1.796             -1.22
+    ladder 3                  queue-aware           43,760   -7807.27         -1.784            -1.455             -1.27
+    ladder 3                  queue-aware, block    38,429   -6921.99         -1.801            -1.484             -1.20
+    ladder 3                  clock                132,097    6490.97          0.491             0.475              3.24
+    ladder 5                  touch                 96,274   -7502.36         -0.779            -0.609             -1.10
+    ladder 5                  volume-through        40,920   -8794.38         -2.149            -1.839             -1.15
+    ladder 5                  queue-aware           51,381   -9210.61         -1.793            -1.461             -1.20
+    ladder 5                  queue-aware, block    45,285   -8229.80         -1.817            -1.497             -1.15
+    ladder 5                  clock                151,729   10551.35          0.695             0.672              2.41
+    A-S γ0.1 τ10              touch                  6,559    -558.80         -0.852            -0.808             -1.44
+    A-S γ0.1 τ10              volume-through         4,418    -740.75         -1.677            -1.613             -1.52
+    A-S γ0.1 τ10              queue-aware            5,173    -770.23         -1.489            -1.377             -1.51
+    A-S γ0.1 τ10              queue-aware, block     4,195    -628.50         -1.498            -1.415             -1.35
+    A-S γ0.1 τ10              clock                  7,528     826.11          1.097             1.108              1.80
+    A-S γ0.05 τ10             touch                 11,438   -1029.90         -0.900            -0.812             -1.52
+    A-S γ0.05 τ10             volume-through         7,350   -1304.02         -1.774            -1.616             -1.54
+    A-S γ0.05 τ10             queue-aware            8,516   -1347.84         -1.583            -1.408             -1.58
+    A-S γ0.05 τ10             queue-aware, block     6,959   -1138.60         -1.636            -1.468             -1.47
+    A-S γ0.05 τ10             clock                 15,169    1557.76          1.027             1.016              3.42
+    A-S γ0.5 τ10              touch                    444     -39.63         -0.892            -0.695             -0.50
+    A-S γ0.5 τ10              volume-through           361     -60.23         -1.668            -1.626             -0.56
+    A-S γ0.5 τ10              queue-aware              401     -59.28         -1.478            -1.333             -0.54
+    A-S γ0.5 τ10              queue-aware, block       351     -48.88         -1.393            -1.312             -0.50
+    A-S γ0.5 τ10              clock                     98      19.15          1.954             1.938              0.39
+    A-S γ0.1 τ3               touch                 13,438   -1456.93         -1.084            -0.939             -1.56
+    A-S γ0.1 τ3               volume-through         9,243   -1676.75         -1.814            -1.646             -1.38
+    A-S γ0.1 τ3               queue-aware           10,636   -1761.70         -1.656            -1.432             -1.48
+    A-S γ0.1 τ3               queue-aware, block     8,644   -1485.03         -1.718            -1.522             -1.34
+    A-S γ0.1 τ3               clock                 20,036    2050.72          1.024             1.039              3.43
+    A-S γ0.1 τ30              touch                  1,273    -115.86         -0.910            -0.901             -0.83
+    A-S γ0.1 τ30              volume-through           951    -158.04         -1.662            -1.709             -0.80
+    A-S γ0.1 τ30              queue-aware            1,082    -162.31         -1.500            -1.502             -0.84
+    A-S γ0.1 τ30              queue-aware, block       903    -132.43         -1.467            -1.472             -0.77
+    A-S γ0.1 τ30              clock                    656     101.83          1.552             1.533              0.59
+    A-S γ0.1 τ10 α0.5         touch                  5,969    -525.36         -0.880            -0.836             -1.43
+    A-S γ0.1 τ10 α0.5         volume-through         4,126    -694.23         -1.683            -1.622             -1.47
+    A-S γ0.1 τ10 α0.5         queue-aware            4,768    -719.65         -1.509            -1.395             -1.49
+    A-S γ0.1 τ10 α0.5         queue-aware, block     3,863    -576.26         -1.492            -1.422             -1.38
+    A-S γ0.1 τ10 α0.5         clock                  7,359     862.35          1.172             1.148              1.89
+    A-S γ0.1 τ10 α1           touch                  5,602    -502.35         -0.897            -0.850             -1.40
+    A-S γ0.1 τ10 α1           volume-through         3,925    -660.42         -1.683            -1.625             -1.42
+    A-S γ0.1 τ10 α1           queue-aware            4,513    -688.93         -1.527            -1.433             -1.46
+    A-S γ0.1 τ10 α1           queue-aware, block     3,595    -551.51         -1.534            -1.471             -1.33
+    A-S γ0.1 τ10 α1           clock                  7,684     902.88          1.175             1.127              1.85
+    GLFT γ0.05                touch                 15,463   -2088.53         -1.351            -1.151             -1.26
+    GLFT γ0.05                volume-through        11,242   -2136.50         -1.900            -1.721             -1.21
+    GLFT γ0.05                queue-aware           12,847   -2243.97         -1.747            -1.543             -1.27
+    GLFT γ0.05                queue-aware, block    10,374   -1905.58         -1.837            -1.656             -1.14
+    GLFT γ0.05                clock                 25,665    2521.93          0.983             0.990              2.23
+    GLFT γ0.1                 touch                 14,333   -1954.59         -1.364            -1.165             -1.22
+    GLFT γ0.1                 volume-through        10,587   -2015.69         -1.904            -1.703             -1.20
+    GLFT γ0.1                 queue-aware           12,007   -2109.68         -1.757            -1.532             -1.24
+    GLFT γ0.1                 queue-aware, block     9,680   -1795.83         -1.855            -1.637             -1.13
+    GLFT γ0.1                 clock                 23,612    2446.15          1.036             1.034              2.35
+    GLFT γ0.5                 touch                 12,605   -1115.20         -0.885            -0.802             -1.28
+    GLFT γ0.5                 volume-through         8,067   -1419.03         -1.759            -1.593             -1.30
+    GLFT γ0.5                 queue-aware            9,352   -1466.01         -1.568            -1.397             -1.35
+    GLFT γ0.5                 queue-aware, block     7,745   -1246.11         -1.609            -1.437             -1.26
+    GLFT γ0.5                 clock                 16,081    1658.81          1.032             1.033              2.73
+    symmetric cap 2           touch                 64,053   -1432.24         -0.224            -0.144             -1.05
+    symmetric cap 2           volume-through        15,394   -3105.64         -2.017            -1.694             -1.35
+    symmetric cap 2           queue-aware           20,789   -3323.31         -1.599            -1.275             -1.41
+    symmetric cap 2           queue-aware, block    18,775   -2987.98         -1.591            -1.266             -1.35
+    symmetric cap 2           clock                 57,362    1182.02          0.206             0.208              2.98
+    symmetric cap 10          touch                 69,184   -2636.75         -0.381            -0.158             -0.83
+    symmetric cap 10          volume-through        20,480   -4074.98         -1.990            -1.673             -1.19
+    symmetric cap 10          queue-aware           27,588   -4408.30         -1.598            -1.258             -1.29
+    symmetric cap 10          queue-aware, block    24,860   -3681.35         -1.481            -1.256             -1.28
+    symmetric cap 10          clock                 65,425    1314.41          0.201             0.207              1.36
+    GLFT γ0.1 cap 2           touch                 13,802   -1901.57         -1.378            -1.159             -1.25
+    GLFT γ0.1 cap 2           volume-through        10,044   -1918.65         -1.910            -1.677             -1.22
+    GLFT γ0.1 cap 2           queue-aware           11,383   -2016.98         -1.772            -1.513             -1.26
+    GLFT γ0.1 cap 2           queue-aware, block     9,204   -1707.74         -1.855            -1.628             -1.15
+    GLFT γ0.1 cap 2           clock                 23,310    2373.05          1.018             1.011              2.57
+    GLFT γ0.1 cap 10          touch                 14,337   -1956.98         -1.365            -1.165             -1.22
+    GLFT γ0.1 cap 10          volume-through        10,593   -2013.25         -1.901            -1.703             -1.20
+    GLFT γ0.1 cap 10          queue-aware           12,015   -2110.76         -1.757            -1.531             -1.24
+    GLFT γ0.1 cap 10          queue-aware, block     9,688   -1795.50         -1.853            -1.636             -1.13
+    GLFT γ0.1 cap 10          clock                 23,612    2446.15          1.036             1.034              2.35
+    symmetric @0.1s           touch                100,952   -3264.57         -0.323            -0.211             -1.11
+    symmetric @0.1s           volume-through        21,287   -3786.92         -1.779            -1.546             -1.16
+    symmetric @0.1s           queue-aware           34,840   -4939.01         -1.418            -1.136             -1.27
+    symmetric @0.1s           queue-aware, block    32,789   -4549.87         -1.388            -1.106             -1.27
+    symmetric @0.1s           clock                 72,134    1580.23          0.219             0.242              1.92
+    symmetric @5s             touch                 25,297   -1203.73         -0.476            -0.205             -0.80
+    symmetric @5s             volume-through        12,292   -2607.86         -2.122            -1.634             -1.57
+    symmetric @5s             queue-aware           14,325   -2496.73         -1.743            -1.288             -1.68
+    symmetric @5s             queue-aware, block    13,966   -2426.96         -1.738            -1.296             -1.64
+    symmetric @5s             clock                 30,826     624.83          0.203             0.226              1.15
+    A-S γ0.1 τ10 @0.1s        touch                  5,542    -412.54         -0.744            -0.722             -1.17
+    A-S γ0.1 τ10 @0.1s        volume-through         4,012    -452.39         -1.128            -1.079             -1.14
+    A-S γ0.1 τ10 @0.1s        queue-aware            4,588    -462.21         -1.007            -0.966             -1.18
+    A-S γ0.1 τ10 @0.1s        queue-aware, block     2,957    -307.14         -1.039            -1.003             -1.05
+    A-S γ0.1 τ10 @0.1s        clock                  7,751     837.14          1.080             1.086              1.62
+    A-S γ0.1 τ10 @5s          touch                  6,551    -626.75         -0.957            -0.854             -1.99
+    A-S γ0.1 τ10 @5s          volume-through         4,834    -909.63         -1.882            -1.721             -2.02
+    A-S γ0.1 τ10 @5s          queue-aware            5,479    -869.52         -1.587            -1.423             -2.03
+    A-S γ0.1 τ10 @5s          queue-aware, block     5,145    -836.22         -1.625            -1.454             -2.01
+    A-S γ0.1 τ10 @5s          clock                  5,470     678.73          1.241             1.245              1.87
+    GLFT γ0.1 @0.1s           touch                 15,144   -1873.03         -1.237            -1.071             -1.14
+    GLFT γ0.1 @0.1s           volume-through        11,443   -1772.31         -1.549            -1.432             -1.10
+    GLFT γ0.1 @0.1s           queue-aware           12,658   -1944.65         -1.536            -1.366             -1.16
+    GLFT γ0.1 @0.1s           queue-aware, block     8,433   -1335.64         -1.584            -1.435             -1.10
+    GLFT γ0.1 @0.1s           clock                 26,451    2671.24          1.010             1.009              2.11
+    GLFT γ0.1 @5s             touch                 10,438   -1496.97         -1.434            -1.165             -1.78
+    GLFT γ0.1 @5s             volume-through         8,466   -1647.26         -1.946            -1.688             -1.86
+    GLFT γ0.1 @5s             queue-aware            9,338   -1617.90         -1.733            -1.461             -1.82
+    GLFT γ0.1 @5s             queue-aware, block     8,910   -1589.84         -1.784            -1.481             -1.78
+    GLFT γ0.1 @5s             clock                 15,702    1801.47          1.147             1.142              2.74
+    imbalance 0.3 @0.1s       touch                 41,528    3267.53          0.787             0.546              1.16
+    imbalance 0.3 @0.1s       volume-through         1,843      -5.94         -0.032            -0.658             -0.01
+    imbalance 0.3 @0.1s       queue-aware            3,596     -77.67         -0.216            -0.262             -0.09
+    imbalance 0.3 @0.1s       queue-aware, block     2,842      -6.49         -0.023            -0.058             -0.01
+    imbalance 0.3 @0.1s       clock                 37,648    3973.14          1.055             0.614              1.73
+    imbalance 0.3 @5s         touch                 11,592      81.76          0.071             0.130              0.09
+    imbalance 0.3 @5s         volume-through         4,210   -1117.07         -2.653            -1.761             -1.02
+    imbalance 0.3 @5s         queue-aware            5,149   -1058.81         -2.056            -1.316             -1.14
+    imbalance 0.3 @5s         queue-aware, block     4,838   -1015.58         -2.099            -1.337             -1.08
+    imbalance 0.3 @5s         clock                 14,939    1392.76          0.932             0.703              1.92
+    trade filter 1s @0.1s     touch                 43,011    -639.71         -0.149            -0.074             -0.71
+    trade filter 1s @0.1s     volume-through         6,330    -709.83         -1.121            -1.453             -1.07
+    trade filter 1s @0.1s     queue-aware           10,820   -1368.07         -1.264            -1.118             -1.67
+    trade filter 1s @0.1s     queue-aware, block     9,464   -1129.07         -1.193            -1.075             -1.59
+    trade filter 1s @0.1s     clock                 34,623    1294.30          0.374             0.245              1.40
+    trade filter 1s @5s       touch                 11,568    -512.91         -0.443            -0.185             -0.59
+    trade filter 1s @5s       volume-through         5,210   -1127.17         -2.163            -1.537             -1.38
+    trade filter 1s @5s       queue-aware            6,123   -1100.03         -1.797            -1.226             -1.35
+    trade filter 1s @5s       queue-aware, block     5,927   -1099.68         -1.855            -1.239             -1.32
+    trade filter 1s @5s       clock                 14,025     425.07          0.303             0.239              0.83
+
+==============================================================================
+ETH: does the fill rule change which strategy looks best?
+==============================================================================
+    all variants: 48 strategies
+    rule                  Kendall tau  Spearman rho   sign differs   flattered   top 5 kept   best strategy
+    touch                        0.74          0.90             8%         75%          2 / 5   imbalance 0.3 @0.1s
+    volume-through               0.96          0.99             0%          6%          5 / 5   trade filter 5s
+    queue-aware                  0.97          1.00             0%          0%          5 / 5   trade filter 5s
+    queue-aware, block           1.00          1.00             0%          0%          5 / 5   trade filter 5s
+    clock                       -0.08         -0.09            88%        100%          1 / 5   ladder 5
+
+    the four of the first experiment: 4 strategies
+    rule                  Kendall tau  Spearman rho   sign differs   flattered   top 3 kept   best strategy
+    touch                        0.67          0.80             0%         50%          2 / 3   A-S γ0.1 τ10
+    volume-through               1.00          1.00             0%          0%          3 / 3   A-S γ0.1 τ10
+    queue-aware                  1.00          1.00             0%          0%          3 / 3   A-S γ0.1 τ10
+    queue-aware, block           1.00          1.00             0%          0%          3 / 3   A-S γ0.1 τ10
+    clock                        0.00          0.00            75%        100%          2 / 3   GLFT γ0.1
+    (reference: queue-aware, block, the rule that reproduces real fills)

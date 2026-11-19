@@ -1,0 +1,71 @@
+\documentclass[10pt,twocolumn,a4paper]{article}
+
+% --- layout and fonts --------------------------------------------------------
+\usepackage[a4paper,margin=18mm,columnsep=6mm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+% twocolumn implies \flushbottom, which stretches the space between paragraphs
+% to fill each column to the bottom; let columns end where their text ends.
+\raggedbottom
+% Run-in paragraph heads sit closer to the preceding text than section heads
+% do (article's default, 3.25ex, is nearly the 3.5ex before a \section).
+\makeatletter
+\renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
+  {1.2ex \@plus .4ex \@minus .2ex}{-1em}{\normalfont\normalsize\bfseries}}
+\makeatother
+
+% --- mathematics, tables, figures ----------------------------------------------
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{graphicx}
+\graphicspath{{figures/}}
+\usepackage[font=small,labelfont=bf]{caption}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\setlist{nosep,leftmargin=*}
+
+% --- references ------------------------------------------------------------------
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+
+\input{macros}
+
+\title{\textbf{The Fill Assumption: Measuring Fill-Model Risk in\\
+Market-Making Backtests with Order-Level Data from an On-Chain Limit Order Book}}
+\author{\todo{Author Name}\\[2pt]
+\small \todo{Affiliation}}
+\date{\todo{Draft of \today}}
+
+\begin{document}
+
+\twocolumn[
+\begin{@twocolumnfalse}
+\maketitle
+\input{sections/abstract}
+\vspace{1.5em}
+\end{@twocolumnfalse}
+]
+
+\input{sections/introduction}
+\input{sections/related}
+\input{sections/data}
+\input{sections/reconstruction}
+\input{sections/outcomes}
+\input{sections/fillmodels}
+\input{sections/survival}
+\input{sections/blockprotection}
+\input{sections/backtest}
+\input{sections/price}
+\input{sections/limitations}
+\input{sections/conclusion}
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\appendix
+\input{sections/appendix}
+
+\end{document}

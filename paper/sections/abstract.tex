@@ -1,0 +1,29 @@
+\begin{abstract}
+\noindent
+Every backtest of a market-making strategy must decide whether a passive limit
+order that never existed would have been filled. Historical data cannot answer
+this, so backtests substitute a rule---most commonly, that an order fills once
+the price touches it---and the substitution is rarely measured. We measure it.
+Using the public order-level (L4) dataset of the Hyperliquid on-chain limit order
+book, in which every order of every participant is observed from placement to
+fill or cancellation, we reconstruct the book, the exact queue position of each
+resting order and the moment it reaches the front of its queue, and we confront
+four standard fill models with the real outcome of millions of real orders.
+The touch rule overstates fills five- to six-fold; the volume-through rule
+understates them two- to three-fold and misses more than half of real fills;
+an exponential-intensity clock in the Avellaneda--Stoikov tradition is governed
+by its calibration rather than by the data. All three errors share one cause:
+more than 94\% of the volume queued ahead of an order leaves by cancellation, not
+by trading. A queue-aware rule reproduces the observed fill rate to within 5\%,
+and its residual error is entirely due to the exchange processing cancellations
+before aggressors within a block; with that rule added it matches the observed
+fill rate exactly. Such in-block cancellations rescue 2--4\% of orders that a
+trade would otherwise have filled, and the rescued fills would have been worse
+than real ones at short horizons. Backtesting four quoting strategies under each
+fill rule, the same strategy's PnL changes by up to \tbd{} and the ranking of
+strategies agrees across fill rules with Kendall $\tau$ = \tbd.
+
+\medskip
+\noindent\textbf{Keywords:} market making; backtesting; fill probability; queue
+position; limit order book; order-level data; decentralised exchanges.
+\end{abstract}

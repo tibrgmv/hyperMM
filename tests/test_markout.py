@@ -37,3 +37,9 @@ def test_an_ask_filled_before_the_price_falls_gains():
 def test_the_mid_is_taken_as_it_stood_at_the_horizon():
     # one second on, the mid has not moved yet
     assert markout(fill(1, 10_000, False), BOOK, 1).to_list() == [pytest.approx(0)]
+
+
+def test_a_horizon_past_the_observed_window_is_unknown():
+    fills = pl.concat([fill(1, 10_000, False), fill(8, 10_000, False)])
+    # the window ends at second 12: the first horizon (11 s) is inside it, the second (18 s) not
+    assert markout(fills, BOOK, 10, until=12 * S).to_list() == [pytest.approx(-10), None]

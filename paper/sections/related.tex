@@ -1,0 +1,35 @@
+\section{Related work}
+\label{sec:related}
+
+\paragraph{Optimal market making.}
+The stochastic-control literature following \citet{ho1981optimal} and
+\citet{avellaneda2008high} models the arrival of fills to a quote at distance
+$\delta$ from the mid-price as a Poisson process with intensity
+$\lambda(\delta)=A e^{-k\delta}$. \citet{gueant2013dealing} solve the resulting
+inventory problem in closed form; \citet{cartea2015algorithmic} give a
+textbook treatment. In this framework the fill rule \emph{is} the intensity
+function, and the queue in front of a quote does not appear at all.
+
+\paragraph{Queues and fill probability.}
+Queue-reactive and queueing models of the order book
+\citep{cont2010stochastic,huang2015simulating} describe the dynamics of the
+volume at each level; \citet{moallemi2016model} value a position in the queue.
+\citet{lo2002econometric} model limit-order execution times with survival
+analysis, which our outcome table is built to support. Queue imbalance at the
+best prices predicts the next mid-price move \citep{gould2016queue}.
+\todo{Add Zhong et al.\ (fill probability, queue position as a feature) once the
+exact reference is confirmed.}
+
+\paragraph{Backtesting practice.}
+Retail and professional backtesting platforms fill limit orders on candle
+touch and market orders at the next bar's open, with a user-chosen constant
+slippage \todo{cite platform documentation: TradingView, backtrader,
+vectorbt}. Event-driven simulators typically wait for traded volume at the
+order's price to exceed the volume displayed ahead of it. Neither rule has, to
+our knowledge, been validated against the outcomes of real orders.
+
+\paragraph{Order-level data.}
+Exchange order-level data has so far been available only under licence and
+without participant identities. The \emph{Open Book} dataset
+\citep{albers2026openbook} is, to our knowledge, the first public order-level
+record of a major venue that follows every order of every participant.

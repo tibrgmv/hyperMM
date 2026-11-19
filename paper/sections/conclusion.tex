@@ -1,0 +1,17 @@
+\section{Conclusion}
+\label{sec:conclusion}
+
+The fill rule of a market-making backtest is an assumption about an event that
+cannot be observed, and it is usually left untested. Order-level data from an
+on-chain limit order book makes it testable. On real orders whose fate is known,
+the two standard event rules miss the observed fill rate by factors of two to
+six in opposite directions, and an exponential-intensity clock is set by its
+calibration rather than by the data. One mechanism explains both event rules:
+almost all of the queue in front of an order leaves by cancellation. A rule that
+follows the queue, with the exchange's in-block processing order, reproduces the
+observed fill rate exactly; in-block cancellation priority rescues a few percent
+of orders, apparently from the most toxic flow.
+
+For backtests, the fill rule alone moves a strategy's PnL by up to \tbd{} and
+its Sharpe ratio by up to \tbd, and the ranking of strategies agrees across
+rules with Kendall $\tau$ = \tbd. \tbd

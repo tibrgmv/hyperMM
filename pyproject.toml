@@ -36,6 +36,7 @@ rl = [
 viz = [
     "streamlit>=1.38",
     "plotly>=5.24",
+    "matplotlib>=3.9",      # figures of the paper (scripts/figures.py)
 ]
 dev = [
     "pytest>=8.3",

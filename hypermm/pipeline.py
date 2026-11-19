@@ -2,20 +2,35 @@
 
 The steps are the same wherever an hour is needed -- the page export, the reports
 that back the journal, and later the fill models -- so they live in one place.
+
+An hour can be rebuilt on its own (`load_hour`) or inside a window of consecutive
+hourly files (`load_window`). The book diff stream carries no snapshot, only
+changes, so a file read on its own starts with an empty book: orders resting from
+before it have no placement, and its first minutes are a warm-up (journal, 24
+August). Chained after the previous hour, the book is already built when the hour
+opens, and chained before the next one, an order placed late in the hour is
+watched past the hour's end instead of being cut off at it.
 """
 
 from __future__ import annotations
 
+from collections import OrderedDict
+from collections.abc import Sequence
 from dataclasses import dataclass
+from datetime import datetime, timedelta
 from pathlib import Path
 
 import polars as pl
 
+from hypermm import config
 from hypermm.ingest import book_diffs, orders, trades
 from hypermm.reconstruct.book import with_top_of_book
 from hypermm.reconstruct.outcomes import outcomes
 from hypermm.reconstruct.queue import with_front, with_queue_position
 from hypermm.reconstruct.timing import with_time
+
+NS = 1_000_000_000
+WARM_UP = 5 * 60 * NS  # orders placed this soon after a cold start are left out
 
 STATUS_COLUMNS = (
     "ts", "oid", "statusId", "isAsk", "limitPx", "sz", "reduceOnly", "tifId",
@@ -29,6 +44,8 @@ class Hour:
     fills: pl.DataFrame  # trade stream, this coin
     top: pl.DataFrame  # book diffs with queue position, time and top of book
     table: pl.DataFrame  # one row per passive order placed within the hour
+    after_previous: bool = False  # the book came in built from the previous hour
+    before_next: bool = False  # orders are watched on into the next hour
 
 
 def read_changes(raw: str | Path, date: str, hour: int, coins=None) -> pl.DataFrame:
@@ -73,3 +90,98 @@ def load_hour(
     statuses = read_statuses(raw, date, hour, coin)
     top = rebuild(changes, statuses)
     return Hour(coin, statuses, fills, top, outcomes(top, fills))
+
+
+def chain(frames: Sequence[pl.DataFrame]) -> pl.DataFrame:
+    """Consecutive hourly book diff files as one stream: `seq` runs on across files.
+
+    Each frame must be a whole file (all coins), so that its height is its length.
+    """
+    parts, offset = [], 0
+    for frame in frames:
+        parts.append(frame.with_columns((pl.col("seq").cast(pl.Int64) + offset).alias("seq")))
+        offset += frame.height
+    return pl.concat(parts)
+
+
+class Reader:
+    """Parsed hourly files, kept for the few hours a sliding window revisits.
+
+    Book diffs and trades are shared by all coins and parsed once per hour; a
+    missing file reads as None, so a window simply stops where the data stops.
+    """
+
+    def __init__(self, raw: str | Path, keep: int = 4):
+        self.raw, self.keep = Path(raw), keep
+        self._cache: OrderedDict[tuple, pl.DataFrame | None] = OrderedDict()
+
+    def _get(self, key: tuple, path: Path, read):
+        if key not in self._cache:
+            self._cache[key] = read() if path.exists() else None
+            while len(self._cache) > self.keep * 6:  # changes + fills + statuses of a few coins
+                self._cache.popitem(last=False)
+        self._cache.move_to_end(key)
+        return self._cache[key]
+
+    def changes(self, at: datetime) -> pl.DataFrame | None:
+        date, hour = at.strftime("%Y%m%d"), at.hour
+        path = book_diffs.hour_path(self.raw / "book_diffs", date, hour)
+        return self._get(("changes", at), path, lambda: read_changes(self.raw, date, hour))
+
+    def fills(self, at: datetime) -> pl.DataFrame | None:
+        date, hour = at.strftime("%Y%m%d"), at.hour
+        path = trades.hour_path(self.raw / "trades", date, hour)
+        # the trade file covers every listed instrument; one of them (a spot pair) has
+        # been seen with a size that has more than eight decimals
+        return self._get(
+            ("fills", at), path, lambda: read_fills(self.raw, date, hour, config.INSTRUMENTS)
+        )
+
+    def statuses(self, at: datetime, coin: str) -> pl.DataFrame | None:
+        date, hour = at.strftime("%Y%m%d"), at.hour
+        path = orders.hour_path(self.raw / "order_statuses", date, hour, coin)
+        return self._get(
+            ("statuses", at, coin), path, lambda: read_statuses(self.raw, date, hour, coin)
+        )
+
+    def complete(self, at: datetime, coin: str) -> bool:
+        return all(
+            frame is not None
+            for frame in (self.changes(at), self.fills(at), self.statuses(at, coin))
+        )
+
+
+def load_window(reader: Reader, date: str, hour: int, coin: str) -> Hour:
+    """One hour rebuilt between its neighbours, where their files are at hand.
+
+    The book, queue and outcomes are rebuilt over previous + this + next hour; the
+    table keeps the orders placed in this hour's file. Without the previous hour the
+    book starts cold and the first five minutes are left out, as `load_hour` users
+    do by hand; without the next one, outcomes are cut off at the end of the hour.
+    """
+    coin = coin.upper()
+    centre = datetime.strptime(date, "%Y%m%d") + timedelta(hours=hour)
+    if not reader.complete(centre, coin):
+        raise FileNotFoundError(f"{coin} {date} {hour:02d}: some hourly file is missing")
+    previous, following = centre - timedelta(hours=1), centre + timedelta(hours=1)
+    after_previous = reader.complete(previous, coin)
+    before_next = reader.complete(following, coin)
+    span = [
+        at
+        for at, use in ((previous, after_previous), (centre, True), (following, before_next))
+        if use
+    ]
+
+    files = [reader.changes(at) for at in span]
+    changes = chain(files).filter(pl.col("coin") == coin)
+    fills = pl.concat([reader.fills(at) for at in span]).filter(pl.col("coin") == coin)
+    statuses = pl.concat([reader.statuses(at, coin) for at in span])
+
+    top = rebuild(changes, statuses)
+    first = sum(f.height for f in files[: span.index(centre)])
+    table = outcomes(top, fills).filter(
+        pl.col("seqPlaced").is_between(first, first + files[span.index(centre)].height - 1)
+    )
+    if not after_previous:
+        table = table.filter(pl.col("tPlaced") >= top["ts"].min() + WARM_UP)
+    return Hour(coin, statuses, fills, top, table, after_previous, before_next)

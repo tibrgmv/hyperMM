@@ -1,0 +1,16 @@
+\section{Limitations}
+\label{sec:limitations}
+
+\paragraph{Order identity versus participant behaviour.} The fill models are
+evaluated on real orders in their real queue. A backtested order was never in the
+book, and its presence would have changed neither the queue nor other
+participants' behaviour; the backtests of Section~\ref{sec:backtest} inherit
+this limitation.
+
+\paragraph{Line order within a block.} We take the order of lines in a file as
+the order in which the exchange emitted events. Sorting by order id does not
+explain it, but the assumption is not otherwise verifiable.
+
+\paragraph{One venue.} In-block cancellation priority is specific to
+Hyperliquid's block processing; on a venue with continuous matching the same race
+is decided by latency, and the size of the protection need not carry over.

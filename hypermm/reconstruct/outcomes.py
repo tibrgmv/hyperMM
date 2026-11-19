@@ -53,6 +53,7 @@ def outcomes(diffs: pl.DataFrame, trades: pl.DataFrame) -> pl.DataFrame:
 
     placed = diffs.filter(pl.col("kind") == NEW).select(
         "oid",
+        pl.col("seq").alias("seqPlaced"),
         "coin",
         "isAsk",
         "px",

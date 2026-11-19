@@ -1,0 +1,41 @@
+\section{Data}
+\label{sec:data}
+
+\subsection{Venue}
+Hyperliquid runs a central limit order book for perpetual futures on its own
+blockchain. Orders, cancellations and trades are processed in blocks produced
+roughly every 100\ms; within a block the exchange applies a fixed processing
+order. Price--time priority governs each level.
+
+\subsection{The Open Book dataset}
+\citet{albers2026openbook} publish three hourly streams for \BTC, \ETH{} and \SOL:
+\begin{description}
+  \item[Order statuses.] Every status change of every order (open, cancelled,
+  filled, rejected for one of several reasons), in a packed 54-byte binary
+  record carrying a nanosecond timestamp \texttt{ts}, the order id
+  \texttt{oid}, side, limit price, size, time in force and reduce-only flag.
+  Rejected orders are stored in separate files.
+  \item[Book diffs.] Every change to the resting book---an order added, reduced
+  or removed---as JSON, \emph{without any timestamp}: the position of a line in
+  the file is the only ordering it carries.
+  \item[Trades.] Every trade with both counterparties' order ids, price, size
+  and time, for all listed instruments.
+\end{description}
+The order id is the only key common to all three streams. Coverage is December
+2025 for order statuses and book diffs, and October 2025 to January 2026 for
+trades.
+
+\subsection{Sample}
+The results in this draft use one hour, \pilothour, for \BTC{} and \SOL{}:
+5.2 million status records for \BTC{} and 1.2 million for \SOL, 6.6 million book
+changes across the three instruments, and 210\,567 trades across all listed
+instruments. The full sample covers \tbd{} hours of December 2025 for \BTC,
+\ETH{} and \SOL{}: \tbd{} million passive orders and \tbd{} million trades.
+
+\paragraph{Composition.}
+The order flow is overwhelmingly that of liquidity providers: 97.2\% of
+accepted \SOL{} orders are post-only (ALO), 1.4\% immediate-or-cancel and
+1.2\% good-till-cancelled. Only 0.83\% of passive \SOL{} orders and 1.60\% of
+passive \BTC{} orders receive any fill (Section~\ref{sec:outcomes}). The spread
+equals one tick 93.5\% (\SOL) and 90.3\% (\BTC) of the time, so competition for
+fills is waged through queue position rather than price.

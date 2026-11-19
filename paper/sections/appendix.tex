@@ -1,0 +1,135 @@
+\section{Reconstruction details}
+\label{app:reconstruction}
+
+\paragraph{Representation.}
+Prices and sizes are decoded into 64-bit integers in units of $10^{-8}$ rather
+than into floating point. The queue-aware rule fires when the volume ahead
+reaches \emph{exactly} zero, and floating-point accumulation leaves residues of
+order $10^{-16}$ that make the condition fail. Decimal strings are parsed by digit
+shifting, exact by construction. Products of two scaled quantities (notional,
+VWAP) are formed only after division by the scale, since they would overflow.
+Times are integer nanoseconds on one scale across streams.
+
+\paragraph{Blocks.}
+In the pilot hour \BTC{} records fall on 37\,301 distinct timestamps and \SOL{}
+records on 36\,366 (mean spacing 96.5 and 99.0\ms); the two sets share 35\,818.
+If timestamps were event times, coincidences within the $3.6\times10^{12}$
+nanoseconds of an hour would be expected $4\times10^{-4}$ times. The diagnostic
+was first validated on synthetic block- and event-clocked data.
+
+\paragraph{Processing order within a block.}
+Measured over all pairs of events of two types within one block---a statistic,
+unlike the share of ``clean'' blocks, that does not depend on block
+size---placements precede cancellations in 96.6\% (\BTC, 155 million pairs) and
+98.5\% (\SOL, 19.9 million) of pairs, and cancellations precede fills in 98.8\%
+and 99.4\%. The documented order (cancellations before new orders) is thus not
+the observed one, while its economically relevant part holds. Line order is not
+explained by sorting on order id.
+
+\paragraph{Time.}
+A placement takes the time the order was accepted, a removal the time of the
+order's last status, and a size reduction inherits the last exact time before it.
+Pairing the $k$-th book change with the $k$-th status instead would create false
+pairs, since the streams record different numbers of events for 0.87\% of orders.
+99.45\% of \SOL{} changes receive an exact time; inherited times are within one
+block of the truth in 92.6\% of verifiable cases.
+
+\paragraph{Front of the queue.}
+Orders of a level are numbered by arrival and a head pointer moves past orders
+that have left, never past orders still to come; the pass is linear and compiled
+with \texttt{numba}. On 200 random orders per instrument it agrees with an
+independent computation of the full path of volume ahead in 200 of 200.
+
+\paragraph{The status stream omits maker fills.}
+For maker orders with at least one trade, \texttt{filled} statuses cover 58.2\%
+(\SOL) and 61.6\% (\BTC) of trades and never exceed them. A status is recorded for
+the taker in 96.0\% / 94.6\% of trades but for the maker in only 63.8\% / 68.9\%.
+
+\paragraph{Reduce-only orders.}
+The exchange trims a reduce-only order to the current position: the size in the
+book differs from the submitted one for 81\% of such \SOL{} orders and almost
+never otherwise. Queue volume is therefore taken from the book stream, and a size
+reduction without a trade is a trim, not a fill.
+
+\paragraph{Hour boundaries.}
+The book-diff stream carries changes, not snapshots, so an hourly file read alone
+opens on an empty book and its first minutes are a warm-up. Hours are rebuilt in
+a window chaining the previous and next files; the files join without a single
+contradiction at the seam, and cold-start events in the centre hour fall by
+three-quarters.
+
+\begin{table}[t]
+\centering\small
+\caption{Consistency checks of the rebuilt book, pilot hour.}
+\label{tab:checks}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+Check & \SOL & \BTC \\
+\midrule
+Level volume below zero & 0 & 0 \\
+Order placed twice & 0 & 0 \\
+Carried size $\neq$ recorded \texttt{origSz} & 0 & 0 \\
+Partial fill that grows the order & 0 & 0 \\
+Removal leaving size behind & 0 & 0 \\
+Crossed book (best bid $\geq$ best ask) & 0 & 0 \\
+Best price with no volume & 0 & 0 \\
+\midrule
+Book states rebuilt & 1\,115\,559 & 3\,531\,915 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Backtest by strategy}
+\label{app:variants}
+
+\begin{table*}[p]
+\centering\scriptsize
+\caption{Total PnL in dollars of every strategy variant under each fill rule,
+1~December 2025, 24 one-hour runs per instrument, before fees. Rules: T \touch,
+V \vt, Q \qa, B \qa{} with the block rule (the reference), C \clock. Families and
+parameters: Table~\ref{tab:families}; ``@'' marks the reaction speed where it is
+not one second.}
+\label{tab:variants}
+\setlength{\tabcolsep}{2.4pt}
+\begin{tabular}{@{}l rrrrr c rrrrr c rrrrr@{}}
+\toprule
+ & \multicolumn{5}{c}{\BTC} && \multicolumn{5}{c}{\ETH} && \multicolumn{5}{c}{\SOL} \\
+\cmidrule{2-6}\cmidrule{8-12}\cmidrule{14-18}
+Strategy & T & V & Q & B & C && T & V & Q & B & C && T & V & Q & B & C \\
+\midrule
+\inputrows{tables/variant_rows.tex}
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\section{Reproducibility}
+\label{app:repro}
+
+The code is a Python package (\texttt{hypermm}) with modules for ingestion,
+reconstruction, fill models, fill checking and toxicity, and report scripts, each
+of which prints one group of numbers in this paper; their reference output on the
+pilot hour is stored with the code. \todo{Repository URL and licence; data
+download (Zenodo record 18184441).}
+
+\begin{table}[h]
+\centering\small
+\caption{Where each result is computed.}
+\label{tab:scripts}
+\footnotesize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}ll@{}}
+\toprule
+Result & Script \\
+\midrule
+Blocks (\S\ref{sec:reconstruction}) & \texttt{check\_block\_semantics.py} \\
+Streams (\S\ref{sec:data}) & \texttt{report\_streams.py} \\
+Reconstruction (App.~\ref{app:reconstruction}) & \texttt{report\_reconstruction.py} \\
+Makers, outcomes (\S\ref{sec:outcomes}) & \texttt{report\_fills.py} \\
+Fill models (\S\ref{sec:fillmodels}) & \texttt{report\_fill\_models.py} \\
+In-block protection (\S\ref{sec:block}) & \texttt{report\_block\_protection.py} \\
+Survival (\S\ref{sec:survival}) & \texttt{report\_survival.py} \\
+Backtest (\S\ref{sec:backtest}) & \texttt{report\_backtest.py} \\
+Market orders (\S\ref{sec:price}) & \texttt{report\_price\_accuracy.py} \\
+Figures, tables & \texttt{figures.py}, \texttt{paper\_tables.py} \\
+\bottomrule
+\end{tabular}
+\end{table}

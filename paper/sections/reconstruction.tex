@@ -1,0 +1,38 @@
+\section{Reconstruction}
+\label{sec:reconstruction}
+
+The fill rules of Section~\ref{sec:fillmodels} need four things the dataset does
+not state directly: the block each event belongs to, the volume resting ahead of
+each order, the moment each order reaches the front of its queue, and which side
+of each trade rested. We summarise how each is obtained; details and validation
+are in Appendix~\ref{app:reconstruction}.
+
+\paragraph{Blocks.}
+The dataset carries no block number, but status timestamps are block times:
+96--98\% of them coincide exactly between \BTC{} and \SOL, against $4\times10^{-4}$
+chance coincidences for event times. A block is recovered by grouping events on
+equal timestamps. Within a block, \textbf{cancellations precede fills in
+98.8--99.4\% of event pairs}, so a cancellation submitted in the same block as an
+aggressor is processed first (Section~\ref{sec:block}).
+
+\paragraph{Queue position and the front of the queue.}
+\label{sec:queue}
+The book-diff stream reports the size each order retains after every change, so
+the volume of a level is a running sum of size changes and the volume ahead of
+an order at placement is the level's volume just before it arrives. The moment
+an order reaches the front---when nothing that arrived earlier at its level is
+still resting---is found by a linear sequential pass per level. Size reductions
+keep priority. Book diffs carry no time; each change takes the time of the
+corresponding order status.
+
+\paragraph{Fills.}
+A fill is taken from the trade stream, the maker being the side whose order is in
+the book. Fill statuses cannot be used: they record only about 60\% of maker
+fills, and the omission is one-sided, so it would bias outcomes rather than add
+noise (Appendix~\ref{app:reconstruction}).
+
+\paragraph{Validation.}
+Every rebuilt hour passes checks that count states impossible in a correctly
+ordered book---negative level volume, a crossed book, a carried size disagreeing
+with the size recorded in the event---all zero on real data
+(Table~\ref{tab:checks}).

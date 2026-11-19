@@ -1,0 +1,35 @@
+\section{A second substitution: the price of aggressive orders}
+\label{sec:price}
+
+A candle-based backtest substitutes an invented number at two points, and they
+differ by order type. For a limit order it invents the \emph{decision}---whether
+the bar touched the price---while the price, the order's own limit, is right;
+this is \touch{} expressed in bars, measured in Section~\ref{sec:fillmodels}.
+For a market order the decision is trivial, but the \emph{price} is invented:
+common platforms execute it at the next bar's open, ignore volume, and add a
+user-chosen constant slippage. The spread is never crossed and the book is never
+walked. A market maker is passive, but any inventory-constrained strategy unloads
+aggressively, and in a candle backtest that unloading is free.
+
+We estimate the true price of a market order by sweeping the reconstructed book
+at the moment of decision, consuming levels outward from the best price until the
+size is filled, and compare it with candle-based approximations (mid-price, best
+price, bar VWAP, bar close, next bar's open), signed so that a positive error is
+a gift to the strategy.
+
+Two identities hold exactly on the data (residual below $10^{-15}$):
+\begin{enumerate}
+  \item The gift of a round trip equals the mean spread plus the cost of two
+  sweeps through the book. Price drift between decision and execution helps one
+  leg exactly as much as it hurts the other and cancels; what remains is
+  structural.
+  \item The difference between the sell and the buy legs equals twice the drift
+  plus the difference in sweep cost between the two sides of the book.
+\end{enumerate}
+The bias is positive in every combination of instrument, size and side. The
+fabricated saving per round trip is 1.33--3.01 median spreads on \SOL{} and
+3.12--6.37 on \BTC, increasing with order size; it exceeds the market maker's
+entire gross revenue from the same round trip already at \$1\,000. By the first
+identity it is bounded below by the full spread at any size and does not average
+out with more data. Over the full sample the saving is \tbd--\tbd{} median
+spreads on \BTC, \tbd--\tbd{} on \ETH{} and \tbd--\tbd{} on \SOL.
